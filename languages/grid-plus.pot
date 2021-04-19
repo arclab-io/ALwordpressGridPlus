@@ -1,0 +1,748 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Grid Plus\n"
+"POT-Creation-Date: 2020-08-28 10:08+0700\n"
+"PO-Revision-Date: 2017-07-08 15:18+0700\n"
+"Last-Translator: \n"
+"Language-Team: G5Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.4\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_GB\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: _e;_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"esc_attr__;esc_attr_e;esc_attr_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;"
+"_n_noop:1,2;_nx_noop:1,2,3c;__\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: assets\n"
+"X-Poedit-SearchPathExcluded-1: .idea\n"
+"X-Poedit-SearchPathExcluded-2: .svn\n"
+
+#: core/ajax_be.php:29
+msgid "Please input grid name !"
+msgstr ""
+
+#: core/ajax_be.php:38
+msgid "The grid name already exist. Please change grid name !"
+msgstr ""
+
+#: core/ajax_be.php:95
+msgid "Cannot find grid information !"
+msgstr ""
+
+#: core/post-format-ui/post-format-ui.php:185
+msgid "Post Format Meta"
+msgstr ""
+
+#: core/post-format-ui/templates/format-audio.php:12
+#: core/post-format-ui/templates/format-audio.php:13
+msgid "Audio URL (oEmbed) or Embed Code"
+msgstr ""
+
+#: core/post-format-ui/templates/format-gallery.php:14
+msgid "Gallery"
+msgstr ""
+
+#: core/post-format-ui/templates/format-gallery.php:36
+#: partials/data-source.php:102
+msgid "+ Add Images"
+msgstr ""
+
+#: core/post-format-ui/templates/format-link.php:12
+#: core/post-format-ui/templates/format-link.php:13
+msgid "Link Text"
+msgstr ""
+
+#: core/post-format-ui/templates/format-link.php:16
+#: core/post-format-ui/templates/format-link.php:17
+msgid "Link Url"
+msgstr ""
+
+#: core/post-format-ui/templates/format-quote.php:12
+#: core/post-format-ui/templates/format-quote.php:13
+msgid "Quote Content"
+msgstr ""
+
+#: core/post-format-ui/templates/format-quote.php:16
+#: core/post-format-ui/templates/format-quote.php:17
+msgid "Author Name"
+msgstr ""
+
+#: core/post-format-ui/templates/format-quote.php:20
+#: core/post-format-ui/templates/format-quote.php:21
+msgid "Author Url"
+msgstr ""
+
+#: core/post-format-ui/templates/format-video.php:12
+#: core/post-format-ui/templates/format-video.php:13
+msgid "Video URL (oEmbed) or Embed Code"
+msgstr ""
+
+#: grid-plus.php:80
+msgid "Clear"
+msgstr ""
+
+#: grid-plus.php:81
+msgid "Clear color"
+msgstr ""
+
+#: grid-plus.php:82
+msgid "Default"
+msgstr ""
+
+#: grid-plus.php:83
+msgid "Select default color"
+msgstr ""
+
+#: grid-plus.php:84
+msgid "Select Color"
+msgstr ""
+
+#: grid-plus.php:85
+msgid "Color value"
+msgstr ""
+
+#: grid-plus.php:140 grid-plus.php:141 partials/grid-editor.php:49
+msgid "Grid Plus"
+msgstr ""
+
+#: grid-plus.php:150 grid-plus.php:151
+msgid "All grid"
+msgstr ""
+
+#: grid-plus.php:158 grid-plus.php:159 partials/bar/listing-bar.php:19
+msgid "Add grid"
+msgstr ""
+
+#: grid-plus.php:290
+msgid "Missing parameter \"name\" in shortcode"
+msgstr ""
+
+#: grid-plus.php:296
+msgid "Cannot find grid information"
+msgstr ""
+
+#: grid-plus.php:320
+msgid "Pages"
+msgstr ""
+
+#: grid-plus.php:359
+msgid "Video URL"
+msgstr ""
+
+#: partials/animation.php:9 partials/data-source.php:137
+#: partials/layout-config.php:36
+msgid "None"
+msgstr ""
+
+#: partials/animation.php:10
+msgid "Bounce In Down"
+msgstr ""
+
+#: partials/animation.php:11
+msgid "Bounce In Left"
+msgstr ""
+
+#: partials/animation.php:12
+msgid "Bounce In Right"
+msgstr ""
+
+#: partials/animation.php:13
+msgid "Bounce In Up"
+msgstr ""
+
+#: partials/animation.php:14
+msgid "Fade In Up"
+msgstr ""
+
+#: partials/animation.php:15
+msgid "Fade In Down"
+msgstr ""
+
+#: partials/animation.php:16
+msgid "Fade In Left"
+msgstr ""
+
+#: partials/animation.php:17
+msgid "Fade In Right"
+msgstr ""
+
+#: partials/animation.php:18
+msgid "Flip Horizontal"
+msgstr ""
+
+#: partials/animation.php:19
+msgid "Slide In Up"
+msgstr ""
+
+#: partials/animation.php:20
+msgid "Zoom In"
+msgstr ""
+
+#: partials/animation.php:45
+msgid "Preview"
+msgstr ""
+
+#: partials/bar/layout-bar.php:10 partials/bar/submit-bar.php:10
+#: partials/settings.php:60
+msgid "Layout Builder"
+msgstr ""
+
+#: partials/bar/layout-bar.php:12
+msgid "Change image ratio"
+msgstr ""
+
+#: partials/bar/layout-bar.php:13
+msgid "Generate Layout"
+msgstr ""
+
+#: partials/bar/layout-bar.php:14
+msgid "Add Item"
+msgstr ""
+
+#: partials/bar/layout-bar.php:15
+msgid "Change style"
+msgstr ""
+
+#: partials/bar/layout-bar.php:16 partials/bar/submit-bar.php:12
+msgid "Save Layout"
+msgstr ""
+
+#: partials/bar/listing-bar.php:11
+msgid "Listing layout"
+msgstr ""
+
+#: partials/bar/listing-bar.php:18
+msgid "Refresh grid"
+msgstr ""
+
+#: partials/carousel.php:42
+msgid "Desktop large columns"
+msgstr ""
+
+#: partials/carousel.php:45 partials/carousel.php:54
+#: partials/carousel.php:63 partials/carousel.php:72
+#: partials/carousel.php:81 partials/carousel.php:90
+msgid "Min width (pixel):"
+msgstr ""
+
+#: partials/carousel.php:51
+msgid "Desktop medium columns"
+msgstr ""
+
+#: partials/carousel.php:60
+msgid "Desktop small columns"
+msgstr ""
+
+#: partials/carousel.php:69
+msgid "Tablet columns"
+msgstr ""
+
+#: partials/carousel.php:78
+msgid "Tablet small columns"
+msgstr ""
+
+#: partials/carousel.php:87
+msgid "Mobile columns"
+msgstr ""
+
+#: partials/carousel.php:98
+msgid "Image ratio (width x height)"
+msgstr ""
+
+#: partials/carousel.php:107
+msgid "Is right to left"
+msgstr ""
+
+#: partials/carousel.php:114
+msgid "Loop"
+msgstr ""
+
+#: partials/carousel.php:121
+msgid "Autoplay"
+msgstr ""
+
+#: partials/carousel.php:128
+msgid "Autoplay Hover Pause"
+msgstr ""
+
+#: partials/carousel.php:135
+msgid "Autoplay Time"
+msgstr ""
+
+#: partials/carousel.php:138
+msgid "( miliseconds )"
+msgstr ""
+
+#: partials/carousel.php:157
+msgid "Next Text"
+msgstr ""
+
+#: partials/carousel.php:164
+msgid "Previous Text"
+msgstr ""
+
+#: partials/color.php:32
+msgid "Category filter color"
+msgstr ""
+
+#: partials/color.php:41
+msgid "Category filter hover color"
+msgstr ""
+
+#: partials/color.php:50
+msgid "No image background color"
+msgstr ""
+
+#: partials/color.php:59
+msgid "Background hover color"
+msgstr ""
+
+#: partials/color.php:68
+msgid "Icon color"
+msgstr ""
+
+#: partials/color.php:77
+msgid "Icon hover color"
+msgstr ""
+
+#: partials/color.php:86
+msgid "Title color"
+msgstr ""
+
+#: partials/color.php:95
+msgid "Title hover color"
+msgstr ""
+
+#: partials/color.php:104
+msgid "Excerpt color"
+msgstr ""
+
+#: partials/color.php:115
+msgid "Custom CSS"
+msgstr ""
+
+#: partials/data-source.php:51
+msgid "Post type"
+msgstr ""
+
+#: partials/data-source.php:64
+msgid "Attachment type"
+msgstr ""
+
+#: partials/data-source.php:68
+msgid "Choose items"
+msgstr ""
+
+#: partials/data-source.php:69
+msgid "Choose source"
+msgstr ""
+
+#: partials/data-source.php:79
+msgid "Select Gallery"
+msgstr ""
+
+#: partials/data-source.php:109
+msgid "Categories"
+msgstr ""
+
+#: partials/data-source.php:113
+msgid "Select category"
+msgstr ""
+
+#: partials/data-source.php:133
+msgid "Show category"
+msgstr ""
+
+#: partials/data-source.php:138
+msgid "Left"
+msgstr ""
+
+#: partials/data-source.php:139
+msgid "Right"
+msgstr ""
+
+#: partials/data-source.php:140
+msgid "Center"
+msgstr ""
+
+#: partials/data-source.php:146
+msgid "Category filter multi line?"
+msgstr ""
+
+#: partials/data-source.php:152
+msgid "Author(s)"
+msgstr ""
+
+#: partials/data-source.php:156
+msgid "Select author"
+msgstr ""
+
+#: partials/data-source.php:167
+msgid "Include Post"
+msgstr ""
+
+#: partials/data-source.php:171 partials/data-source.php:188
+msgid "Select post by input post title and press enter"
+msgstr ""
+
+#: partials/data-source.php:184
+msgid "Exclude Post"
+msgstr ""
+
+#: partials/data-source.php:204
+msgid "Ascending"
+msgstr ""
+
+#: partials/data-source.php:205
+msgid "Descending"
+msgstr ""
+
+#: partials/data-source.php:213
+msgid "Select Order"
+msgstr ""
+
+#: partials/data-source.php:214
+msgid "By post id"
+msgstr ""
+
+#: partials/data-source.php:215
+msgid "By author"
+msgstr ""
+
+#: partials/data-source.php:216
+msgid "By title"
+msgstr ""
+
+#: partials/data-source.php:218
+msgid "By post name (post slug)"
+msgstr ""
+
+#: partials/data-source.php:219
+msgid "By date"
+msgstr ""
+
+#: partials/data-source.php:220
+msgid "Random order"
+msgstr ""
+
+#: partials/data-source.php:222
+msgid "By Page Order (Menu Order)"
+msgstr ""
+
+#: partials/donate-rate.php:10
+msgid "Help us develop the plugin, add new features and improve support!"
+msgstr ""
+
+#: partials/donate-rate.php:11
+msgid "Donate whatever sum you choose, even just 10$."
+msgstr ""
+
+#: partials/donate-rate.php:14
+msgid "Buy Premium Version"
+msgstr ""
+
+#: partials/donate-rate.php:15
+msgid "Rate Us"
+msgstr ""
+
+#: partials/donate-rate.php:16
+msgid "Documentation"
+msgstr ""
+
+#: partials/donate-rate.php:17
+msgid "Translate"
+msgstr ""
+
+#: partials/donate-rate.php:18
+msgid "Support Forum"
+msgstr ""
+
+#: partials/donate-rate.php:20
+msgid "Thank you very much!"
+msgstr ""
+
+#: partials/layout-config.php:24
+msgid "Grid"
+msgstr ""
+
+#: partials/layout-config.php:25
+msgid "Masonry"
+msgstr ""
+
+#: partials/layout-config.php:26
+msgid "Carousel"
+msgstr ""
+
+#: partials/layout-config.php:29
+msgid "2 Columns"
+msgstr ""
+
+#: partials/layout-config.php:30
+msgid "3 Columns"
+msgstr ""
+
+#: partials/layout-config.php:31
+msgid "4 Columns"
+msgstr ""
+
+#: partials/layout-config.php:32
+msgid "5 Columns"
+msgstr ""
+
+#: partials/layout-config.php:33
+msgid "6 Columns"
+msgstr ""
+
+#: partials/layout-config.php:37
+msgid "5 pixel"
+msgstr ""
+
+#: partials/layout-config.php:38
+msgid "10 pixel"
+msgstr ""
+
+#: partials/layout-config.php:39
+msgid "15 pixel"
+msgstr ""
+
+#: partials/layout-config.php:40
+msgid "20 pixel"
+msgstr ""
+
+#: partials/layout-config.php:41
+msgid "30 pixel"
+msgstr ""
+
+#: partials/layout-config.php:45
+msgid "Thumbnail"
+msgstr ""
+
+#: partials/layout-config.php:46
+msgid "Fullsize"
+msgstr ""
+
+#: partials/layout-config.php:51
+msgid "New Grid"
+msgstr ""
+
+#: partials/layout-config.php:59
+msgid "Grid ID"
+msgstr ""
+
+#: partials/layout-config.php:65
+msgid "Grid Shortcode"
+msgstr ""
+
+#: partials/layout-config.php:70 partials/listing.php:51
+msgid "Copy to clipboard"
+msgstr ""
+
+#: partials/layout-config.php:75
+msgid ""
+"Click icon clipboard to copy and paste shortcode to page or anywhere"
+msgstr ""
+
+#: partials/layout-config.php:80
+msgid "Grid name"
+msgstr ""
+
+#: partials/layout-config.php:84
+msgid "Grid name is identity"
+msgstr ""
+
+#: partials/layout-config.php:89
+msgid "Grid type"
+msgstr ""
+
+#: partials/layout-config.php:102
+msgid ""
+"Please click generate layout after change layout type to update item "
+"width"
+msgstr ""
+
+#: partials/layout-config.php:107
+msgid "Grid columns"
+msgstr ""
+
+#: partials/layout-config.php:120
+msgid ""
+"Please click generate layout after change layout type to update grid "
+"column"
+msgstr ""
+
+#: partials/layout-config.php:126
+msgid "Gutter"
+msgstr ""
+
+#: partials/layout-config.php:139
+msgid "Please click generate layout after change gutter"
+msgstr ""
+
+#: partials/layout-config.php:145
+msgid "Fixed Item Height"
+msgstr ""
+
+#: partials/layout-config.php:156
+msgid "Dynamic Crop Image"
+msgstr ""
+
+#: partials/layout-config.php:166
+msgid "Use image size as original"
+msgstr ""
+
+#: partials/layout-config.php:178
+msgid "Should use Full if Dynamic Crop Image selected"
+msgstr ""
+
+#: partials/layout-config.php:184
+msgid "Disable Link"
+msgstr ""
+
+#: partials/layout.php:12
+msgid "The post title"
+msgstr ""
+
+#: partials/listing.php:13
+msgid "All Grid Plus"
+msgstr ""
+
+#: partials/listing.php:17
+msgid "Please select .json file and click import to import grid"
+msgstr ""
+
+#: partials/listing.php:23
+msgid "Import"
+msgstr ""
+
+#: partials/listing.php:34
+msgid "ID"
+msgstr ""
+
+#: partials/listing.php:35
+msgid "Name"
+msgstr ""
+
+#: partials/listing.php:36
+msgid "Shortcode"
+msgstr ""
+
+#: partials/listing.php:37
+msgid "Actions"
+msgstr ""
+
+#: partials/listing.php:56 partials/tmpl.php:80
+msgid "Edit"
+msgstr ""
+
+#: partials/listing.php:57 partials/tmpl.php:81
+msgid "Clone"
+msgstr ""
+
+#: partials/listing.php:58 partials/tmpl.php:82
+msgid "Delete"
+msgstr ""
+
+#: partials/pagination.php:17
+msgid "Next"
+msgstr ""
+
+#: partials/pagination.php:28
+msgid "Pagination type"
+msgstr ""
+
+#: partials/pagination.php:31
+msgid "Page Numbers"
+msgstr ""
+
+#: partials/pagination.php:32
+msgid "Load more button"
+msgstr ""
+
+#: partials/pagination.php:33
+msgid "Infinite scroll"
+msgstr ""
+
+#: partials/pagination.php:34
+msgid "Show All"
+msgstr ""
+
+#: partials/pagination.php:39
+msgid "Item per page"
+msgstr ""
+
+#: partials/pagination.php:46
+msgid "Total items"
+msgstr ""
+
+#: partials/pagination.php:50
+msgid "Set empty for display all"
+msgstr ""
+
+#: partials/pagination.php:55
+msgid "Prev text"
+msgstr ""
+
+#: partials/pagination.php:61
+msgid "Next text"
+msgstr ""
+
+#: partials/pagination.php:67
+msgid "Load more text"
+msgstr ""
+
+#: partials/settings.php:10
+msgid "Grid Plus Settings"
+msgstr ""
+
+#: partials/settings.php:18
+msgid "Grid Configs"
+msgstr ""
+
+#: partials/settings.php:24
+msgid "Data Source"
+msgstr ""
+
+#: partials/settings.php:30
+msgid "Carousel Options"
+msgstr ""
+
+#: partials/settings.php:36
+msgid "Pagination"
+msgstr ""
+
+#: partials/settings.php:42
+msgid "Animation"
+msgstr ""
+
+#: partials/settings.php:48
+msgid "Skin Options"
+msgstr ""
+
+#: partials/settings.php:54
+msgid "Color & CSS"
+msgstr ""
+
+#: shortcodes/carousel-shortcode.php:277 shortcodes/grid-shortcode.php:276
+msgid "Could not find this template"
+msgstr ""
+
+#: shortcodes/templates/category.php:27
+msgid "All"
+msgstr ""
+
+#: skins/woo-thumb-icon-cat-title-price-rate.php:17
+#: skins/woo-thumb-icon-title-price.php:17
+#: skins/woo-thumb-title-price-icon.php:18
+msgid "Sale"
+msgstr ""
+
+#: skins/woo-thumb-icon-cat-title-price-rate.php:18
+#: skins/woo-thumb-icon-title-price.php:18
+#: skins/woo-thumb-title-price-icon.php:19
+msgid "Hot"
+msgstr ""

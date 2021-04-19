@@ -1,0 +1,392 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Grid Plus\n"
+"POT-Creation-Date: 2017-02-10 09:53+0700\n"
+"PO-Revision-Date: 2017-02-10 10:08+0700\n"
+"Last-Translator: \n"
+"Language-Team: g5theme <info@g5plus.net>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _e;__;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c;_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
+"esc_attr__;esc_attr_e;esc_html__;esc_html_e\n"
+"X-Poedit-SearchPath-0: G:\\Projects\\G5\\GridStack\\svn\n"
+
+#: G:\Projects\G5\GridStack\svn/core/ajax_be.php:22
+msgid "Please input grid name !"
+msgstr "¡Por favor ingrese el nombre de la rejilla!"
+
+#: G:\Projects\G5\GridStack\svn/core/ajax_be.php:31
+msgid "The grid name already exist. Please change grid name !"
+msgstr ""
+"El nombre de la rejilla ya existe. ¡Por favor cambie el nombre de la "
+"parrilla!"
+
+#: G:\Projects\G5\GridStack\svn/core/ajax_be.php:88
+msgid "Cannot find grid information !"
+msgstr "No se puede encontrar la información de la cuadrícula!"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-audio.php:12
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-audio.php:13
+msgid "Audio URL (oEmbed) or Embed Code"
+msgstr "URL de audio (oEmbed) o código incrustado"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-gallery.php:35
+msgid "+ Add Images"
+msgstr "+ Añadir imágenes"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-link.php:12
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-link.php:13
+msgid "Text"
+msgstr "Texto"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-link.php:16
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-link.php:17
+msgid "Url"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-quote.php:12
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-quote.php:13
+msgid "Quote Content"
+msgstr "Contenido de la oferta"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-quote.php:16
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-quote.php:17
+msgid "Author Name"
+msgstr "Nombre del autor"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-quote.php:20
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-quote.php:21
+msgid "Author Url"
+msgstr "Autor Url"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-video.php:12
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/format-video.php:13
+msgid "Video URL (oEmbed) or Embed Code"
+msgstr "URL de vídeo (oEmbed) o Código de incrustación"
+
+#: G:\Projects\G5\GridStack\svn/core/post-format-ui/templates/tabs.php:24
+msgid "Standard"
+msgstr "Estándar"
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:104
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:105
+msgid "Grid Plus"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:114
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:115
+msgid "All grid"
+msgstr "Toda la red"
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:122
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:123
+#: G:\Projects\G5\GridStack\svn/partials/bar/listing-bar.php:21
+msgid "Add grid"
+msgstr "Añadir cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:144
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:145
+msgid "Please upload a valid .json file"
+msgstr "Cargue un archivo .json válido."
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:151
+msgid "Please upload a file to import"
+msgstr "Carga un archivo para importarlo"
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:204
+msgid "The grid have been import"
+msgstr "La red ha sido importada"
+
+#: G:\Projects\G5\GridStack\svn/grid-plus.php:212
+msgid "No layout import. It is duplicate layout name with your current grid"
+msgstr ""
+"No hay importación de diseño. Es el nombre de diseño duplicado con su "
+"cuadrícula actual"
+
+#: G:\Projects\G5\GridStack\svn/partials/animation.php:44
+msgid "Preview"
+msgstr "Avance"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/layout-bar.php:10
+#: G:\Projects\G5\GridStack\svn/partials/bar/submit-bar.php:10
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:53
+msgid "Layout Builder"
+msgstr "Constructor de diseño"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/layout-bar.php:13
+msgid "Generate Layout"
+msgstr "Generar diseño"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/layout-bar.php:14
+msgid "Add Item"
+msgstr "Añadir artículo"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/layout-bar.php:15
+msgid "Change style"
+msgstr "Cambia estilo"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/layout-bar.php:16
+#: G:\Projects\G5\GridStack\svn/partials/bar/submit-bar.php:12
+msgid "Save Layout"
+msgstr "Guardar diseño"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/listing-bar.php:11
+msgid "Listing layout"
+msgstr "istado del diseño"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/listing-bar.php:18
+msgid "Export grid"
+msgstr "Rejilla de exportación"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/listing-bar.php:19
+msgid "Import grid"
+msgstr "Rejilla de importación"
+
+#: G:\Projects\G5\GridStack\svn/partials/bar/listing-bar.php:20
+msgid "Refresh grid"
+msgstr "Actualizar la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:88
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:34
+msgid "None"
+msgstr "Ninguna"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:89
+msgid "Left"
+msgstr "Izquierda"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:90
+msgid "Right"
+msgstr "Derecha"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:91
+msgid "Center"
+msgstr "Centrar"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:111
+msgid "Exclude Post"
+msgstr "Excluir mensaje"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:131
+msgid "Ascending"
+msgstr "Ascendente"
+
+#: G:\Projects\G5\GridStack\svn/partials/data-source.php:132
+msgid "Descending"
+msgstr "Descendente"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:22
+msgid "Grid"
+msgstr "Cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:23
+msgid "Masonry"
+msgstr "Albañilería"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:24
+msgid "Metro"
+msgstr "Metro"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:27
+msgid "2 columns"
+msgstr "2 columnas"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:28
+msgid "3 columns"
+msgstr "3 columnas"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:29
+msgid "4 columns"
+msgstr "4 columnas"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:30
+msgid "5 columns"
+msgstr "5 columnas"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:31
+msgid "6 columns"
+msgstr "6 columnas"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:35
+msgid "5 pixel"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:36
+msgid "10 pixel"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:37
+msgid "15 pixel"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:38
+msgid "20 pixel"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:39
+msgid "30 pixel"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:44
+msgid "New Grid"
+msgstr "Nueva cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:53
+msgid "Grid ID"
+msgstr "ID de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:59
+msgid "Grid Shortcode"
+msgstr "Código de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:65
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:51
+msgid "Copy to clipboard"
+msgstr "Copiar al portapapeles"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:70
+msgid "Click icon clipboard to copy and paste shortcode to page or anywhere"
+msgstr ""
+"Haga clic en icono portapapeles para copiar y pegar código corto a la página "
+"o en cualquier lugar"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:75
+msgid "Grid name"
+msgstr "Nombre de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:78
+msgid "Grid name is identity"
+msgstr "El nombre de la cuadrícula es identidad"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:82
+msgid "Grid type"
+msgstr "Tipo de cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:91
+msgid ""
+"Please click generate layout after change layout type to update item width"
+msgstr ""
+"Haga clic en generar diseño después de cambiar el tipo de diseño para "
+"actualizar el ancho del elemento"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:95
+msgid "Grid columns"
+msgstr "Columnas de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:104
+msgid ""
+"Please click generate layout after change layout type to update grid column"
+msgstr ""
+"Haga clic en generar diseño después de cambiar el tipo de diseño para "
+"actualizar la columna de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:108
+msgid "Gutter"
+msgstr "Canal"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:117
+msgid "Please click generate layout after change gutter"
+msgstr "Haga clic en Generar diseño después de cambiar canal"
+
+#: G:\Projects\G5\GridStack\svn/partials/layout-config.php:122
+msgid "Fixed item height"
+msgstr "Altura del artículo fijo"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:17
+msgid "Please select .json file and click import to import grid"
+msgstr ""
+"Seleccione el archivo .json y haga clic en importar para importar la "
+"cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:23
+msgid "Import"
+msgstr "Importar"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:34
+msgid "ID"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:35
+msgid "Name"
+msgstr "Nombre"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:36
+msgid "Shortcode"
+msgstr "Código corto"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:37
+msgid "Actions"
+msgstr "Comportamiento"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:56
+#: G:\Projects\G5\GridStack\svn/partials/tmpl.php:80
+msgid "Edit"
+msgstr "Editar"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:57
+#: G:\Projects\G5\GridStack\svn/partials/tmpl.php:81
+msgid "Clone"
+msgstr "Clon"
+
+#: G:\Projects\G5\GridStack\svn/partials/listing.php:58
+#: G:\Projects\G5\GridStack\svn/partials/tmpl.php:82
+msgid "Delete"
+msgstr "Borrar"
+
+#: G:\Projects\G5\GridStack\svn/partials/pagination.php:17
+msgid "Next"
+msgstr "Siguiente"
+
+#: G:\Projects\G5\GridStack\svn/partials/pagination.php:30
+msgid "Page Numbers"
+msgstr "Número de páginas"
+
+#: G:\Projects\G5\GridStack\svn/partials/pagination.php:31
+msgid "Load more button"
+msgstr "Cargar más botón"
+
+#: G:\Projects\G5\GridStack\svn/partials/pagination.php:32
+msgid "Show All"
+msgstr "Mostrar todo"
+
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:17
+msgid "Grid Config"
+msgstr "Configuración de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:23
+msgid "Data Source"
+msgstr "Fuente de datos"
+
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:29
+msgid "Pagination"
+msgstr "Paginación"
+
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:35
+msgid "Animation"
+msgstr "Animación"
+
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:41
+msgid "Skin Config"
+msgstr "Configuración de la piel"
+
+#: G:\Projects\G5\GridStack\svn/partials/settings.php:47
+msgid "Color & CSS"
+msgstr ""
+
+#: G:\Projects\G5\GridStack\svn/shortcodes/grid-shortcode.php:12
+msgid "Missing parameter \"name\" in shortcode"
+msgstr "Falta el parámetro \"name \" en shortcode"
+
+#: G:\Projects\G5\GridStack\svn/shortcodes/grid-shortcode.php:18
+msgid "Cannot find grid information"
+msgstr "No se puede encontrar la información de la cuadrícula"
+
+#: G:\Projects\G5\GridStack\svn/shortcodes/templates/category.php:18
+msgid "All"
+msgstr "Todas"
