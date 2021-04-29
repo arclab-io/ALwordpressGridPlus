@@ -1,3 +1,30 @@
+# Maintainence Docs  
+  
+## Modal Logic
+Modal logic includes the html logic, content and styling of the modals. It is completely built upon the light gallery code of the original plugin by changing an image being displayed to an html modal.  
+It is in the <em>assets/lib/light-gallery</em> directory. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/bc4e45d100c0ff760969277e5956903027102ac6) for the inital changes and changes locations for modal logic.  
+
+## Ajax Logic
+The calls to get data for each post is built by changing the original plugin's ajax calls to get the light gallery's image data to an ajax call to WordPress's REST API to get post data and then render that data in the modal instead. The post data is stored this way:  
+1. __Post Name__: Title of post
+2. __Post Content__: First block in description of post
+3. __Post Editor/Learner URLs__: Custom fields of post
+4. __Post Image__: Featured image of post. Backup URL is stored in the custom fields
+
+It is in the <em>assets/js/frontend</em> directory. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/28cb3cf7ea1a6e7c50138cff9755fb9d33b3a481) for the initial changes and changes locations for modal logic. Please see the [WordPress REST API docs](https://developer.wordpress.org/rest-api/) for more information on the ajax call being used. 
+
+## Grid Styling
+Grid styling logic is in the <em>assets/css</em> directory. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/28cb3cf7ea1a6e7c50138cff9755fb9d33b3a481) for the initial changes and changes locations for grid styling logic.
+
+## WordPress Plugin Options
+For user convenience for the marketing/business team, signifcant changes to the plugin should be reflected in the WordPress plugin options. For example, changing a certain template to fit our use case should also have its template changed and made visible in the plugin's WordPress options/settings to minimise potential confusion.  
+This logic is in the <em>assets/js/backend</em> directory, the <em>grid-plus.php</em> file and other locations. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/d515d940ae7a2deb5980b5c7baf37eb079c91aff) for the initial changes and changes locations for WordPress plugin options logic.
+
+
+<br></br>
+<br></br>
+# Plugin Docs
+
 === Grid Plus - Unlimited grid layout ===
 Contributors: g5theme
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2CPAKYLULL2KG
