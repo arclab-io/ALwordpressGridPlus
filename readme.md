@@ -1,3 +1,4 @@
+<<<<<<< HEAD:readme.md
 # Maintainence Docs  
   
 ## Modal Logic
@@ -24,6 +25,9 @@ This logic is in the <em>assets/js/backend</em> directory, the <em>grid-plus.php
 <br></br>
 <br></br>
 # Plugin Docs
+=======
+
+>>>>>>> c0fc48c6c317ea3242ce4d21ab42d064f2e15c99:readme.txt
 
 === Grid Plus - Unlimited grid layout ===
 Contributors: g5theme
