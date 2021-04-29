@@ -305,7 +305,7 @@ var GridPlus = GridPlus || {};
                         $previous_height = $max_height;
                         $container_height += parseInt($max_height) + parseInt($gutter);
 
-                        $('.grid-stack-item[data-gs-y="' + $data_gs_y + '"]', $container).css('height', $max_height + 'px');
+                        $('.grid-stack-item[data-gs-y="' + $data_gs_y + '"]', $container).css('height', ($max_height + 30) + 'px');
                         if (!isNaN($top)) {
                             $('.grid-stack-item[data-gs-y="' + $data_gs_y + '"]', $container).css('top', $top);
                         }
@@ -948,32 +948,63 @@ var GridPlus = GridPlus || {};
                     $('i', $this).attr('class', 'fa fa-spinner fa-spin');
                     if (typeof GridPlus.galleries[$post_id] == 'undefined') {
                         $.ajax({
-                            url: $ajax_url,
+                            url: 'https://arclab.io/wp-json/wp/v2/posts?_fields=module_fields,categories,title.rendered,content.rendered&include[]=' + $post_id,
                             type: 'GET',
-                            data: ({
-                                action: 'grid_plus_load_gallery',
-                                post_id: $post_id
-                            }),
                             success: function (data) {
                                 $('i', $this).attr('class', ico);
-                                var $galleries = JSON.parse(data);
-                                if(typeof $galleries !='undefined' && $.isArray($galleries) && $galleries.length > 0){
-                                    $lg = $(this).lightGallery({
-                                        dynamic: true,
-                                        dynamicEl: $galleries,
-                                        hash: false,
-                                        download: true
-                                    });
-                                    GridPlus.light_gallery_after_open($lg);
-                                    GridPlus.galleries[$post_id] = JSON.parse(data);
-                                }
+                                var $galleries = [{
+                                    src: data[0].module_fields.moduleImageURL[0],
+                                    subHtml: '',
+                                    thumb: data[0].module_fields.moduleImageURL[0],
+                                }];
+                                $lg = $(this).lightGallery({
+                                    dynamic: true,
+                                    dynamicEl: $galleries,
+                                    hash: false,
+                                    download: true,
+                                    moduleImageURL: data[0].module_fields.moduleImageURL[0],
+                                    moduleLearnerURL: data[0].module_fields.moduleLearnerURL[0],
+                                    moduleEditorURL: data[0].module_fields.moduleEditorURL[0],
+                                    moduleContent: data[0].content.rendered,
+                                    moduleTitle: data[0].title.rendered,
+                                });
+                                GridPlus.light_gallery_after_open($lg);
                                 $post_item.removeClass('active');
                             },
                             error: function () {
                                 $('i', $this).attr('class', ico);
                                 $post_item.removeClass('active');
                             }
-                        });
+                        })
+                        // $.ajax({
+                        //     url: $ajax_url,
+                        //     type: 'GET',
+                        //     data: ({
+                        //         action: 'grid_plus_load_gallery',
+                        //         post_id: $post_id
+                        //     }),
+                        //     // lightbox code is here
+                        //     success: function (data) {
+                        //         $('i', $this).attr('class', ico);
+                        //         var $galleries = JSON.parse(data);
+                        //         console.log($galleries);
+                        //         if(typeof $galleries !='undefined' && $.isArray($galleries) && $galleries.length > 0){
+                        //             $lg = $(this).lightGallery({
+                        //                 dynamic: true,
+                        //                 dynamicEl: $galleries,
+                        //                 hash: false,
+                        //                 download: true
+                        //             });
+                        //             GridPlus.light_gallery_after_open($lg);
+                        //             GridPlus.galleries[$post_id] = JSON.parse(data);
+                        //         }
+                        //         $post_item.removeClass('active');
+                        //     },
+                        //     error: function () {
+                        //         $('i', $this).attr('class', ico);
+                        //         $post_item.removeClass('active');
+                        //     }
+                        // });
                     }else{
                         $lg = $(this).lightGallery({
                             dynamic: true,

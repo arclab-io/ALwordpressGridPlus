@@ -404,7 +404,7 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
 
 .grid-plus-container .grid-post-item .hover-inner .title:hover,
 .grid-plus-container .grid-post-item .hover-inner .title a:hover {
-    color: #5d97af;
+    color: rgb(41,54,125);
 }
 
 .grid-plus-container .grid-post-item .hover-inner .excerpt,
@@ -433,8 +433,8 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
 }
 
 .grid-plus-container .grid-post-item .icon-groups a:hover {
-    color: #5d97af;
-    border-color: #5d97af;
+    color: rgb(41,54,125);
+    border-color: rgb(41,54,125);
 }
 
 .grid-plus-container .grid-post-item .view-detail,
@@ -549,7 +549,7 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
 }
 
 .grid-category.center {
-    text-align: center;
+    /* text-align: center; */
 }
 
 .grid-category.right {
@@ -567,11 +567,15 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
     font-size: 14px;
 }
 
-.grid-category a.active,
+.grid-category a.active {
+    color:  rgb(41,54,125);
+    text-decoration: underline;
+    font-weight: bold;
+}
+
 .grid-category a:hover,
-.grid-category a:focus,
-.grid-category a:active {
-    color: #5d97af;
+.grid-category a:focus {
+    color: rgb(41,54,125);
 }
 
 .grid-cate-expanded {
@@ -592,7 +596,7 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
 .grid-cate-expanded > span:hover,
 .grid-cate-expanded > span:focus,
 .grid-cate-expanded > span:active {
-    color: #5d97af;
+    color: rgb(41,54,125);
 }
 
 .grid-cate-expanded ul {
