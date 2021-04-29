@@ -206,8 +206,9 @@ if (!class_exists('Grid_Plus')) {
                     'slug'     => 'thumbnail-title-hover-top',
                     'template' => G5PLUS_GRID_DIR . 'skins/thumbnail-title-hover-top.php',
                 ),
+                // name originally 'Thumbnail - icon, title, excerpt'
                 array(
-                    'name'    => 'Thumbnail - icon, title, excerpt',
+                    'name'    => 'Module Modal Template',
                     'slug'     => 'thumbnail-icon-title-excerpt',
                     'template' => G5PLUS_GRID_DIR . 'skins/thumbnail-icon-title-excerpt.php',
                 ),
