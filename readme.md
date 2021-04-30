@@ -20,6 +20,11 @@ Grid styling logic is in the <em>assets/css</em> directory. Please see [these co
 For user convenience for the marketing/business team, signifcant changes to the plugin should be reflected in the WordPress plugin options. For example, changing a certain template to fit our use case should also have its template changed and made visible in the plugin's WordPress options/settings to minimise potential confusion.  
 This logic is in the <em>assets/js/backend</em> directory, the <em>grid-plus.php</em> file and other locations. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/d515d940ae7a2deb5980b5c7baf37eb079c91aff) for the initial changes and changes locations for WordPress plugin options logic.
 
+## Other things to note
+- Minification: The plugin is such that it prioritizes minified files over non-minified files. If there is a file with a minified counterpart (e.g. lightgallery.js & lightgallery.min.js), be sure to minify your changes (js can be minified with [UglifyJS](https://www.npmjs.com/package/uglify-js)) before deploying your changes to WordPress or else they won't be reflected
+- Excess logic: Because of the initial changes to the plugin's lightgallery and ajax logic, there may be excess code that can be trimmed down for improved readability/UI experiences/etc.
+- Original plugin updates: In the event that there may be updates to the original plugin by its maintainer, there may be a need to update this repo accordingly if things start breaking
+
 
 <br></br>
 <br></br>
