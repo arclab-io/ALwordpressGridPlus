@@ -43,7 +43,7 @@
             </div>
         <?php endif; ?>
         <?php if(!empty($excerpt)): ?>
-            <div class="excerpt"><?php echo wp_kses_post($excerpt); ?></div>
+            <!-- <div class="excerpt"><?php echo wp_kses_post($excerpt); ?></div> -->
         <?php endif; ?>
     </div>
 </div>
