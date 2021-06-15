@@ -549,6 +549,7 @@
 		var _this = this;
 		var _hasPoster = false;
 		var _$img;
+		var _$remixButton;
 		var _src;
 		var _poster;
 		var _srcset;
@@ -650,7 +651,7 @@
 				_this.$el.trigger('hasVideo.lg', [index, _src, _html]);
 			} else {
 				// _this.$slide.eq(index).prepend('<div class="lg-img-wrap"><img class="lg-object lg-image" src="' + _src + '" /></div>');
-				_this.$slide.eq(index).prepend('<div class="lg-img-wrap"><div class="module-parent"><div class="module-content"><iframe class="module-iframe" src="' + this.s.moduleLearnerURL + '"></iframe>' + '<div class="module-description"><div><h3 class="module-title">' + this.s.moduleTitle + '</h3><p>' + this.s.moduleContent + '</p></div>' + '<a href="' + this.s.moduleEditorURL + '" target="_parent" class="button module-editor-button">Use Template</a></div>' + '</div></div></div>');
+				_this.$slide.eq(index).prepend(`<div class="lg-img-wrap"><div class="module-parent"><div class="module-content"><iframe class="module-iframe" src="${this.s.moduleLearnerURL}"></iframe><div class="module-description"><div><h3 class="module-title">${this.s.moduleTitle}</h3><p>${this.s.moduleContent}</p></div><div class="module-button-remix-div"><a href="${this.s.moduleEditorURL}" target="_parent" class="button module-editor-button">Use Template</a><p class="module-remix-counter">Remixed ${this.s.remixCounter} times</p></div></div></div></div></div>`);
 			}
 
 			_this.$el.trigger('onAferAppendSlide.lg', [index]);
@@ -659,6 +660,33 @@
 			if (_sizes) {
 				_$img.attr('sizes', _sizes);
 			}
+
+			var ajaxUrl = this.s.ajax_url;
+			var postId = this.s.post_id;
+
+			_$remixButton = _this.$slide.eq(index).find('.module-editor-button');
+			_$remixButton.on('click.lg', function (e) {
+				e.preventDefault();
+				_$remixButton.text('Loading...');
+				_$remixButton.css({
+					'cursor': 'progress'
+				});
+				$.ajax({
+					url: ajaxUrl,
+					data: {
+						action: 'increment_post_remix_counter',
+						post_id: postId,
+					},
+					type: 'POST',
+				})
+					.done(function (data) {
+						window.parent.location = _$remixButton.attr('href');
+						_$remixButton.text('Loading...');
+					})
+					.fail(function (xhr) {
+						console.log(xhr);
+					})
+			});
 
 			if (_srcset) {
 				_$img.attr('srcset', _srcset);

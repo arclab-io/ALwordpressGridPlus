@@ -23,6 +23,17 @@ function grid_plus_load_by_category_callback(){
     wp_die();
 }
 
+add_action("wp_ajax_increment_post_remix_counter", 'increment_post_remix_counter_callback');
+add_action("wp_ajax_nopriv_increment_post_remix_counter", 'increment_post_remix_counter_callback');
+function increment_post_remix_counter_callback(){
+    $post_id = $_REQUEST['post_id'];
+    $remix_counter = get_post_meta($post_id, 'remixCounter', 1);
+    $incremented_remix_counter = (int)$remix_counter + 1;
+    update_post_meta($post_id, 'remixCounter', $incremented_remix_counter);
+    echo(((int)$remix_counter + 1));
+    wp_die();
+}
+
 add_action('wp_ajax_nopriv_grid_plus_load_gallery','grid_plus_load_gallery_callback');
 add_action('wp_ajax_grid_plus_load_gallery', 'grid_plus_load_gallery_callback');
 
