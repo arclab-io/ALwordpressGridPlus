@@ -965,8 +965,11 @@ var GridPlus = GridPlus || {};
                                     moduleImageURL: data[0].module_fields.moduleImageURL[0],
                                     moduleLearnerURL: data[0].module_fields.moduleLearnerURL[0],
                                     moduleEditorURL: data[0].module_fields.moduleEditorURL[0],
+                                    remixCounter: data[0].module_fields.remixCounter ? data[0].module_fields.remixCounter[0] : '0',
                                     moduleContent: data[0].content.rendered,
                                     moduleTitle: data[0].title.rendered,
+                                    ajax_url = $ajax_url,
+                                    post_id = $post_id,
                                 });
                                 GridPlus.light_gallery_after_open($lg);
                                 $post_item.removeClass('active');
