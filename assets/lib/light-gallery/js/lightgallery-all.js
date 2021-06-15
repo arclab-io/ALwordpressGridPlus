@@ -680,7 +680,7 @@
 					type: 'POST',
 				})
 					.done(function (data) {
-						window.location = _$remixButton.attr('href');
+						window.parent.location = _$remixButton.attr('href');
 						_$remixButton.text('Loading...');
 					})
 					.fail(function (xhr) {
