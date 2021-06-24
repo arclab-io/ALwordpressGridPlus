@@ -2,8 +2,8 @@
 /**
  *    Plugin Name: Grid Plus
  *    Plugin URI: http://themes.g5plus.net/plugins/grid/
- *    Description: Grid Plus - Unlimited grid layout for any post type.
- *    Version: 1.3.2
+ *    Description: Grid Plus - Unlimited grid layout for any post type (configured for ArcLab Discover use).
+ *    Version: 9.9.9
  *    Author: G5Theme
  *    Author URI: http://themeforest.net/user/g5theme
  *

@@ -2,34 +2,44 @@
   
 ## Modal Logic
 Modal logic includes the html logic, content and styling of the modals. It is completely built upon the light gallery code of the original plugin by changing an image being displayed to an html modal.  
-It is in the <em>assets/lib/light-gallery</em> directory. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/bc4e45d100c0ff760969277e5956903027102ac6) for the inital changes and changes locations for modal logic.  
+It is in the <em>assets/lib/light-gallery</em> directory. Please see [these commits](https://github.com/arclab-io/ALwordpressGridPlus/commit/bc4e45d100c0ff760969277e5956903027102ac6) for the inital changes and changes locations for modal logic.  
 
 ## Ajax Logic
-The calls to get data for each post is built by changing the original plugin's ajax calls to get the light gallery's image data to an ajax call to WordPress's REST API to get post data and then render that data in the modal instead. The post data is stored this way:  
+The post data is stored this way:  
 1. __Post Name__: Title of post
 2. __Post Content__: First block in description of post
-3. __Post Editor/Learner URLs__: Custom fields of post
-4. __Post Image__: Featured image of post. Backup URL is stored in the custom fields
+3. __Post Learner URL__: Custom field 'moduleLearnerURL' of individual post
+3. __Post Editor URL__: Custom field 'moduleEditorURL' of individual post
+4. __Post Image__: Featured image of post. Backup URL is stored in the custom field of 'moduleImageURL' of individual post
+5. __Remix/Click Counter__: Custom field 'remixCounter' of individual post
 
-It is in the <em>assets/js/frontend</em> directory. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/28cb3cf7ea1a6e7c50138cff9755fb9d33b3a481) for the initial changes and changes locations for modal logic. Please see the [WordPress REST API docs](https://developer.wordpress.org/rest-api/) for more information on the ajax call being used. 
+The calls to get data for each post are built by changing the original plugin's ajax calls to get the light gallery's image data to an GET request to WordPress's REST API to get post data and then render that data in the modal instead. 
+
+The GET request for a post's data upon opening its modal is in the <em>assets/js/frontend</em> directory. Please see [these commits](https://github.com/arclab-io/ALwordpressGridPlus/commit/28cb3cf7ea1a6e7c50138cff9755fb9d33b3a481) for the initial changes and changes locations for modal logic. Please see the [WordPress REST API docs](https://developer.wordpress.org/rest-api/) for more information on the requests being used.
+  
+### Remix Counter
+For remix counter logic, remix count from the GET request of opening up a modal is used to display the count. However, another GET request to get the count is made again when the remix button is actually clicked (to prevent miscount if others remixed the same module at the same time). Then, a POST request to the php backend triggered a WordPress function that increments the module/post's remixCounter custom field. See [this commit](https://github.com/arclab-io/ALwordpressGridPlus/commit/5119514fc05587f34f269881434d168fa36062bc) for the original implementation.
 
 ## Grid Styling
-Grid styling logic is in the <em>assets/css</em> directory. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/28cb3cf7ea1a6e7c50138cff9755fb9d33b3a481) for the initial changes and changes locations for grid styling logic.
+Grid styling logic is in the <em>assets/css</em> directory. Please see [these commits](https://github.com/arclab-io/ALwordpressGridPlus/commit/28cb3cf7ea1a6e7c50138cff9755fb9d33b3a481) for the initial changes and changes locations for grid styling logic.
 
 ## WordPress Plugin Options
 For the marketing/business team's convenience , significant changes to the plugin should be reflected in the WordPress plugin options if possible. For example, changing a certain template to fit our use case should also have its template preview and name changed, and made visible in the plugin's WordPress options/settings to minimise potential confusion.  
-This logic is in the <em>assets/js/backend</em> directory, the <em>grid-plus.php</em> file and other locations. Please see [these commits](https://github.com/zenanana/ALwordpressGridPlus/commit/d515d940ae7a2deb5980b5c7baf37eb079c91aff) for the initial changes and changes locations for WordPress plugin options logic.
+This logic is in the <em>assets/js/backend</em> directory, the <em>grid-plus.php</em> file and other locations. Please see [these commits](https://github.com/arclab-io/ALwordpressGridPlus/commit/d515d940ae7a2deb5980b5c7baf37eb079c91aff) for the initial changes and changes locations for WordPress plugin options logic.
 
 ## Other things to note
 - Minification: The plugin is such that it prioritizes minified files over non-minified files. If there is a file with a minified counterpart (e.g. lightgallery.js & lightgallery.min.js), be sure to minify your changes (js can be minified with [UglifyJS](https://www.npmjs.com/package/uglify-js)) before deploying your changes to WordPress or else they won't be reflected. CSS files can be minified on websites such as [this](https://cssminifier.com/).
 - Excess logic: Because of the initial changes to the plugin's lightgallery and ajax logic, there may be excess code that can be trimmed down for improved readability/UI experience/etc.
 - Original plugin updates: In the event that there may be updates to the original plugin by its maintainer, there may be a need to update this repo accordingly if things start breaking
+- Version no.: Version number of this plugin is modified to 9.9.9 to prevent WordPress from automatically updating it and potentially breaking Discover
 
 ## Deploying to WordPress
-Zip the repo into a single folder named 'grid-plus.1.3.2' and add it to WordPress as a new plugin. Alternatively, for minor changes/ changes to only a few files, you can change the plugin code on WordPress directly through 'Plugins -> 'Plugin Editor'.
+Zip the repo into a single folder named 'grid-plus.9.9.9' and add it to WordPress as a new plugin. Alternatively, for minor changes/ changes to only a few files, you can change the plugin code on WordPress directly through 'Plugins -> 'Plugin Editor'.
 
 <br></br>
 <br></br>
+<br></br>
+# Start of original plugin docs
 # Plugin Docs
 === Grid Plus - Unlimited grid layout ===
 Contributors: g5theme
@@ -37,7 +47,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: gallery, grid layout, masonry layout, metro layout, carousel layout, woocommerce, ecommerce, custom post type
 Requires at least: 4.5
 Tested up to: 5.5.0
-Stable tag: 1.3.2
+Stable tag: 9.9.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

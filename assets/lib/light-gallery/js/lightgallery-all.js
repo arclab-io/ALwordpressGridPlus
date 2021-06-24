@@ -665,8 +665,9 @@
 			var postId = this.s.post_id;
 
 			_$remixButton = _this.$slide.eq(index).find('.module-editor-button');
-			_$remixButton.on('click.lg', function (e) {
+			_$remixButton.one('click', function (e) {
 				e.preventDefault();
+				_$remixButton.attr('disabled', true);
 				_$remixButton.text('Loading...');
 				_$remixButton.css({
 					'cursor': 'progress'
