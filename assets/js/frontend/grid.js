@@ -948,7 +948,7 @@ var GridPlus = GridPlus || {};
                     $('i', $this).attr('class', 'fa fa-spinner fa-spin');
                     if (typeof GridPlus.galleries[$post_id] == 'undefined') {
                         $.ajax({
-                            url: 'https://arclab.io/wp-json/wp/v2/posts?_fields=module_fields,categories,title.rendered,content.rendered&include[]=' + $post_id,
+                            url: 'https://arclab.io/wp-json/wp/v2/posts?_fields=module_fields,categories,tags,title.rendered,content.rendered&include[]=' + $post_id,
                             type: 'GET',
                             success: function (data) {
                                 $('i', $this).attr('class', ico);
