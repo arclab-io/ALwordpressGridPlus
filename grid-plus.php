@@ -18,6 +18,54 @@ defined('G5PLUS_GRID_DIR') or define('G5PLUS_GRID_DIR', plugin_dir_path(__FILE__
 defined('G5PLUS_GRID_URL') or define('G5PLUS_GRID_URL', trailingslashit(plugins_url(basename( __DIR__ ) )));
 defined('G5PLUS_GRID_OPTION_KEY') or define('G5PLUS_GRID_OPTION_KEY', 'grid_plus');
 
+// Intercept requests for /discover/N URLs very early
+add_filter('request', function($query_vars) {
+    // Check if the current request is for /discover/N
+    if (isset($_SERVER['REQUEST_URI']) && preg_match('/\/discover\/(\d+)\/?$/', $_SERVER['REQUEST_URI'], $matches)) {
+        // Force WordPress to load the discover page
+        $query_vars['pagename'] = 'discover';
+        $query_vars['grid_module'] = $matches[1];
+        unset($query_vars['error']);
+        unset($query_vars['attachment']);
+        unset($query_vars['name']);
+    }
+    return $query_vars;
+}, 1);
+
+// Prevent WordPress from showing 404 for /discover/N URLs
+add_action('wp', function() {
+    global $wp_query;
+    
+    // If we're on /discover/N URL, make sure it's not a 404
+    if (isset($_SERVER['REQUEST_URI']) && preg_match('/\/discover\/(\d+)\/?$/', $_SERVER['REQUEST_URI'])) {
+        if ($wp_query->is_404()) {
+            // Get the discover page
+            $discover_page = get_page_by_path('discover');
+            if ($discover_page) {
+                // Override the 404
+                $wp_query->is_404 = false;
+                $wp_query->is_page = true;
+                $wp_query->is_singular = true;
+                $wp_query->queried_object = $discover_page;
+                $wp_query->queried_object_id = $discover_page->ID;
+                $wp_query->posts = array($discover_page);
+                $wp_query->post = $discover_page;
+                $wp_query->found_posts = 1;
+                $wp_query->post_count = 1;
+                $wp_query->max_num_pages = 1;
+                
+                // Set global post
+                global $post;
+                $post = $discover_page;
+                setup_postdata($post);
+                
+                // Set the proper template
+                status_header(200);
+            }
+        }
+    }
+}, 1);
+
 if (!class_exists('Grid_Plus')) {
     class Grid_Plus
     {
@@ -31,6 +79,12 @@ if (!class_exists('Grid_Plus')) {
             add_action('wp_enqueue_scripts', array($this, 'grid_plus_shortcode_register_script'));
             add_shortcode('grid_plus', array($this, 'grid_plus_shortcode'));
 
+            // Add rewrite rules for clean URLs
+            add_action('init', array($this, 'grid_plus_add_rewrite_rules'));
+            add_filter('query_vars', array($this, 'grid_plus_add_query_vars'));
+            add_action('template_redirect', array($this, 'grid_plus_handle_module_redirect'));
+            add_filter('redirect_canonical', array($this, 'grid_plus_prevent_redirect'), 10, 2);
+            add_action('parse_request', array($this, 'grid_plus_parse_request'));
 
             if (is_admin()) {
                 add_action('admin_enqueue_scripts', array($this, 'grid_plus_admin_enqueue_script'));
@@ -281,7 +335,7 @@ if (!class_exists('Grid_Plus')) {
             wp_register_script('grid-plus-stack-jUI', G5PLUS_GRID_URL . 'assets/lib/grid-stack/gridstack.jQueryUI.min.js',array('jquery'), false, true);
             wp_register_script('grid-owl-carousel', G5PLUS_GRID_URL . 'assets/lib/owl-carousel/grid.owl.carousel.min.js',array('jquery'), false, true);
             wp_register_script('match-media', G5PLUS_GRID_URL . 'assets/lib/matchmedia/matchmedia.js',array('jquery'), false, true);
-            wp_register_script('grid-plus-settings', G5PLUS_GRID_URL . 'assets/js/frontend/grid'. $min .'.js', array('wp-util', 'match-media','jquery'), true, true);
+            wp_register_script('grid-plus-settings', G5PLUS_GRID_URL . 'assets/js/frontend/grid'. $min .'.js', array('wp-util', 'match-media','jquery'), time(), true);
         }
 
         function grid_plus_shortcode($atts)
@@ -371,6 +425,150 @@ if (!class_exists('Grid_Plus')) {
 		    }
 		    return $post;
 	    }
+
+        /**
+         * Add rewrite rules for clean module URLs
+         */
+        public function grid_plus_add_rewrite_rules() {
+            // Add rewrite rule for /discover/1, /discover/2, etc.
+            add_rewrite_rule(
+                '^discover/([0-9]+)/?$',
+                'index.php?pagename=discover&grid_module=$1',
+                'top'
+            );
+            
+            // Also add a more permissive rule for any number
+            add_rewrite_rule(
+                'discover/([0-9]+)/?$',
+                'index.php?pagename=discover&grid_module=$1',
+                'top'
+            );
+        }
+
+        /**
+         * Add custom query vars
+         */
+        public function grid_plus_add_query_vars($vars) {
+            $vars[] = 'grid_module';
+            return $vars;
+        }
+
+        /**
+         * Handle module redirect for clean URLs
+         */
+        public function grid_plus_handle_module_redirect() {
+            global $wp_query;
+            
+            // Debug: Check if we're getting the module number
+            if (isset($_SERVER['REQUEST_URI']) && preg_match('/\/discover\/(\d+)\/?$/', $_SERVER['REQUEST_URI'], $matches)) {
+                $url_module = $matches[1];
+                $query_module = get_query_var('grid_module');
+                
+                // If we have a module number from URL but not in query var, set it
+                if ($url_module && !$query_module) {
+                    set_query_var('grid_module', $url_module);
+                }
+            }
+            
+            // Check if we're on the discover page with a module number
+            if (is_page('discover') && get_query_var('grid_module')) {
+                $module_number = intval(get_query_var('grid_module'));
+                
+                // Add JavaScript to open the module
+                add_action('wp_footer', function() use ($module_number) {
+                    ?>
+                    <script>
+                    jQuery(document).ready(function($) {
+                        console.log('[GridPlus PHP] Opening module <?php echo $module_number; ?> from server-side');
+                        // Store the intended module number globally
+                        window.gridPlusUrlModule = <?php echo $module_number; ?>;
+                        
+                        // Add flag to prevent multiple triggers
+                        if (!window.gridPlusPhpTriggered) {
+                            window.gridPlusPhpTriggered = true;
+                            
+                            // Wait for grid to load and ensure handlers are bound
+                            setTimeout(function() {
+                                // Ensure view gallery handlers are initialized
+                                if (typeof GridPlus !== 'undefined' && GridPlus.initViewGallery) {
+                                    console.log('[GridPlus PHP] Ensuring view gallery handlers are initialized');
+                                    GridPlus.initViewGallery($('.grid-plus-container'));
+                                }
+                                
+                                setTimeout(function() {
+                                    // Find the nth module (1-indexed)
+                                    var $module = $('.grid-post-item:eq(' + (<?php echo $module_number; ?> - 1) + ')');
+                                    if ($module.length) {
+                                        var $link = $module.find('a.view-gallery');
+                                        if ($link.length && !$('body').hasClass('lg-on')) {
+                                            // Set the module index before clicking
+                                            $link.attr('data-module-index', <?php echo $module_number; ?>);
+                                            console.log('[GridPlus PHP] Triggering click on module <?php echo $module_number; ?>');
+                                            $link.trigger('click');
+                                        } else if ($('body').hasClass('lg-on')) {
+                                            console.log('[GridPlus PHP] Light Gallery already open, skipping trigger');
+                                        }
+                                    } else {
+                                        console.log('[GridPlus PHP] Module <?php echo $module_number; ?> not found');
+                                    }
+                                }, 200);
+                            }, 1800);
+                        } else {
+                            console.log('[GridPlus PHP] Already triggered, skipping duplicate');
+                        }
+                    });
+                    </script>
+                    <?php
+                }, 100);
+            }
+            
+            // Also check for query parameter ?m=N
+            if (is_page('discover') && isset($_GET['m'])) {
+                $module_number = intval($_GET['m']);
+                
+                // Add JavaScript to open the module
+                add_action('wp_footer', function() use ($module_number) {
+                    ?>
+                    <script>
+                    jQuery(document).ready(function($) {
+                        console.log('[GridPlus PHP] Opening module <?php echo $module_number; ?> from query parameter');
+                        // Store in sessionStorage for JavaScript to pick up
+                        sessionStorage.setItem('gridPlusModuleToOpen', '<?php echo $module_number; ?>');
+                        // Reload without query parameter to clean URL
+                        if (window.location.search.includes('m=')) {
+                            history.replaceState(null, null, '/discover/');
+                        }
+                    });
+                    </script>
+                    <?php
+                }, 100);
+            }
+        }
+        
+        /**
+         * Prevent WordPress from redirecting /discover/N URLs
+         */
+        public function grid_plus_prevent_redirect($redirect_url, $requested_url) {
+            // Check if this is a /discover/N URL
+            if (preg_match('/\/discover\/\d+\/?$/', $requested_url)) {
+                // Prevent redirect for these URLs
+                return false;
+            }
+            return $redirect_url;
+        }
+        
+        /**
+         * Parse request to handle /discover/N URLs
+         */
+        public function grid_plus_parse_request($wp) {
+            // Check if this is a /discover/N URL
+            if (preg_match('/discover\/(\d+)\/?$/', $_SERVER['REQUEST_URI'], $matches)) {
+                // Force WordPress to load the discover page
+                $wp->query_vars['pagename'] = 'discover';
+                $wp->query_vars['grid_module'] = $matches[1];
+                $wp->query_vars['error'] = false; // Prevent 404
+            }
+        }
     }
 
     if (!function_exists('grid_plus_load')) {
