@@ -1363,6 +1363,8 @@ var GridPlus = GridPlus || {};
                                 fullScreen: false, // Disable fullscreen to avoid the error
                                 enableSwipe: true,
                                 enableDrag: true,
+                                closable: true, // Ensure close button is shown
+                                showAfterLoad: true,
                                 moduleImageURL: cachedData.moduleImageURL,
                                 moduleLearnerURL: cachedData.moduleLearnerURL,
                                 moduleEditorURL: cachedData.moduleEditorURL,
@@ -1446,13 +1448,160 @@ var GridPlus = GridPlus || {};
         },
 
         light_gallery_after_open: function($lg){
-            $lg.on('onAfterOpen.lg', function (event, index) {
+            $lg.on('onAfterOpen.lg', function (event, index) {           
                 $('.lg-thumb-outer').css('opacity', '0');
                 setTimeout(function () {
                     $('.lg-has-thumb').removeClass('lg-thumb-open');
                     $('.lg-thumb-outer').css('opacity', '1');
                 }, 700);
+                
+                // Remove any toolbar that exists outside lg-outer immediately
+                $('.lg-toolbar').each(function() {
+                    var $toolbar = $(this);
+                    if (!$toolbar.parent().hasClass('lg-outer')) {
+                        $toolbar.remove();
+                    }
+                });
+                
+                // Try multiple times to add the copy button
+                var attempts = 0;
+                var maxAttempts = 10;
+                
+                var addCopyButton = function() {
+                    attempts++;                    
+                    // Look for the module content (white popup)
+                    var $moduleContent = $('.module-content:visible').first();
+                    
+                    if ($moduleContent.length === 0) {
+                        if (attempts < maxAttempts) {
+                            setTimeout(addCopyButton, 200);
+                        }
+                        return;
+                    }
+                    
+                    // Check if we already added our custom copy button container
+                    if ($moduleContent.find('.gridplus-copy-container').length > 0) {
+                        return;
+                    }
+                                        
+                    // Create a custom container for the copy button
+                    var copyContainer = '<div class="gridplus-copy-container">' +
+                        '<a class="gridplus-copy-btn" href="#" title="Copy link">' +
+                        '<i class="copy icon"></i>' +
+                        '<span style="font-family: FontAwesome; display: none;">&#xf0c5;</span>' +
+                        '</a>' +
+                        '</div>';
+                    
+                    // Append to module-content (white popup)
+                    $moduleContent.prepend(copyContainer);
+                    
+                    // Check if Semantic UI icons are loaded - improved detection
+                    setTimeout(function() {
+                        var $icon = $('.gridplus-copy-btn i.icon');
+                        if ($icon.length) {
+                            var fontFamily = window.getComputedStyle($icon[0], ':before').getPropertyValue('font-family');
+                            
+                            var beforeContent = window.getComputedStyle($icon[0], ':before').getPropertyValue('content');
+                            
+                            if (!fontFamily || fontFamily.toLowerCase().indexOf('icons') === -1 || beforeContent === 'none' || beforeContent === '') {
+                                $icon.hide();
+                                $('.gridplus-copy-btn span').show();
+                            } else {
+                                console.log('[GridPlus] Using Semantic UI icons');
+                            }
+                        }
+                    }, 500); // Increased delay to ensure fonts are loaded
+                    
+                    // Bind the click event for our custom copy button
+                    $(document).off('click.gridplus-copy').on('click.gridplus-copy', '.gridplus-copy-btn', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[GridPlus] Copy button clicked');
+                        
+                        // Get the current URL without query parameters or hash
+                        var currentUrl = window.location.href.split('?')[0].split('#')[0];
+                                                
+                        // Copy to clipboard
+                        GridPlus.copyToClipboard(currentUrl);
+                        return false;
+                    });
+                    
+                    return true;
+                };
+                
+                // Start trying to add the button
+                setTimeout(addCopyButton, 100);
             });
+            
+            // Clean up event handler when lightbox closes
+            $lg.on('onBeforeClose.lg', function() {
+                $(document).off('click.gridplus-copy');
+            });
+        },
+        
+        copyToClipboard: function(text) {
+            // Create a temporary textarea element
+            var $temp = $('<textarea>');
+            $('body').append($temp);
+            $temp.val(text).select();
+            
+            try {
+                // Try to copy using the modern API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        GridPlus.showCopyFeedback(true);
+                    }, function() {
+                        // Fallback to execCommand
+                        GridPlus.copyWithExecCommand($temp, text);
+                    });
+                } else {
+                    // Fallback to execCommand
+                    GridPlus.copyWithExecCommand($temp, text);
+                }
+            } catch (err) {
+                GridPlus.showCopyFeedback(false);
+            }
+            
+            $temp.remove();
+        },
+        
+        copyWithExecCommand: function($temp, text) {
+            try {
+                var successful = document.execCommand('copy');
+                GridPlus.showCopyFeedback(successful);
+            } catch (err) {
+                GridPlus.showCopyFeedback(false);
+            }
+        },
+        
+        showCopyFeedback: function(success) {
+            var $copyButton = $('.gridplus-copy-btn');
+            var originalHtml = $copyButton.html();
+            var usingFontAwesome = $('.gridplus-copy-btn span:visible').length > 0;
+            
+            if (success) {
+                if (usingFontAwesome) {
+                    $copyButton.html('<span style="font-family: FontAwesome;">&#xf00c;</span>');
+                } else {
+                    $copyButton.html('<i class="check icon"></i>');
+                }
+                $copyButton.addClass('copy-success');
+                setTimeout(function() {
+                    $copyButton.html(originalHtml);
+                    $copyButton.removeClass('copy-success');
+                }, 2000);
+            } else {
+                if (usingFontAwesome) {
+                    $copyButton.html('<span style="font-family: FontAwesome;">&#xf00d;</span>');
+                } else {
+                    $copyButton.html('<i class="times icon"></i>');
+                }
+                $copyButton.addClass('copy-error');
+                setTimeout(function() {
+                    $copyButton.html(originalHtml);
+                    $copyButton.removeClass('copy-error');
+                }, 2000);
+            }
         },
 
         getPageNumberFromHref: function ($href) {

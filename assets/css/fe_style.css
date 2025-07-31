@@ -1143,3 +1143,167 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
     pointer-events: none;
     white-space: nowrap;
 }
+
+/* Copy link button styles */
+.lg-toolbar .lg-copy-link {
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.lg-toolbar .lg-copy-link:hover {
+    color: #FFF;
+}
+
+.lg-toolbar .lg-copy-link.copy-success {
+    color: #4CAF50;
+}
+
+.lg-toolbar .lg-copy-link.copy-error {
+    color: #f44336;
+}
+
+/* Semantic UI icon adjustments for copy button */
+.gridplus-copy-btn i.icon {
+    font-size: 18px;
+    line-height: 1;
+    vertical-align: middle;
+    margin: 0;
+    display: inline-block;
+}
+
+/* Ensure Semantic UI copy icon shows properly */
+.gridplus-copy-btn i.copy.icon:before {
+    font-family: 'Icons' !important;
+}
+
+/* Close icon for custom toolbar */
+.lg-toolbar .lg-close:after {
+    content: "\e070";
+    font-family: 'lg';
+}
+
+/* Style the manually created close button */
+.lg-toolbar .lg-icon-close {
+    float: right;
+    font-size: 24px;
+    height: 47px;
+    line-height: 27px;
+    padding: 10px 0;
+    text-align: center;
+    width: 50px;
+    color: #999;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.lg-toolbar .lg-icon-close:hover {
+    color: #FFF;
+}
+
+/* Ensure toolbar is positioned correctly within lightbox */
+.lg-outer > .lg-toolbar {
+    /* Ensure it's positioned relative to lg-outer */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1082;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+/* Make sure lg-outer is positioned properly */
+.lg-outer {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1050 !important;
+}
+
+/* Ensure copy button stays within lightbox */
+.lg-outer .lg-toolbar .lg-copy-link {
+    /* Use same styling as other toolbar icons */
+    color: #999;
+    cursor: pointer;
+    float: right;
+    font-size: 24px;
+    height: 47px;
+    line-height: 27px;
+    padding: 10px 0;
+    text-align: center;
+    width: 50px;
+    text-decoration: none !important;
+    outline: medium none;
+}
+
+/* Font Awesome fallback styling */
+.lg-toolbar .lg-copy-link span {
+    font-size: 20px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* Ensure all toolbar buttons stay inside the lightbox */
+.lg-outer .lg-toolbar .lg-icon {
+    position: relative !important;
+    z-index: 1083 !important;
+}
+
+/* Hide any toolbar that might be created outside the lightbox */
+body > .lg-toolbar {
+    display: none !important;
+}
+
+/* Custom copy button container styles */
+.gridplus-copy-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+/* Style for copy button inside white module popup */
+.module-content .gridplus-copy-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.gridplus-copy-btn {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #666;
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    line-height: 1;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.gridplus-copy-btn:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #333;
+    text-decoration: none;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.gridplus-copy-btn.copy-success {
+    color: #4CAF50;
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.gridplus-copy-btn.copy-error {
+    color: #f44336;
+    border-color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Ensure module-content has relative positioning for absolute children */
+.module-content {
+    position: relative !important;
+}

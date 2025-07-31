@@ -320,6 +320,7 @@ if (!class_exists('Grid_Plus')) {
             wp_register_style('grid-plus-stack', G5PLUS_GRID_URL . 'assets/lib/grid-stack/gridstack.min.css');
             wp_register_style('grid-plus-stack-extra', G5PLUS_GRID_URL . 'assets/lib/grid-stack/gridstack-extra.min.css');
             wp_register_style('grid-owl-carousel', G5PLUS_GRID_URL . 'assets/lib/owl-carousel/grid.owl.carousel.min.css');
+            wp_register_style('semantic-ui-icon', 'https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/components/icon.min.css');
             wp_register_style('grid-plus-fe-style', G5PLUS_GRID_URL . 'assets/css/fe_style.css', array(), false);
         }
 
@@ -385,6 +386,7 @@ if (!class_exists('Grid_Plus')) {
             wp_enqueue_style('grid-plus-stack');
             wp_enqueue_style('grid-plus-stack-extra');
             wp_enqueue_style('grid-owl-carousel');
+            wp_enqueue_style('semantic-ui-icon');
             wp_enqueue_style('grid-plus-fe-style');
 
             wp_enqueue_script('light-gallery');
