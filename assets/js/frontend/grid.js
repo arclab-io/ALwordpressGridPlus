@@ -2064,11 +2064,6 @@ var GridPlus = GridPlus || {};
             window.gridPlusModuleToOpen = moduleNumber;
             // Also store as the URL module to force Light Gallery to use it
             window.gridPlusForceModule = moduleNumber;
-            
-            // Early validation - check if module number seems valid
-            if (moduleNumber < 1 || moduleNumber > 100) {
-                console.warn('[GridPlus] Module number ' + moduleNumber + ' seems invalid (outside 1-100 range)');
-            }
         }
     })();
     
