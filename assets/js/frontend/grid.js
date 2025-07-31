@@ -4,14 +4,37 @@
 var GridPlus = GridPlus || {};
 (function ($) {
     "use strict";
+    
+    // Ensure jQuery is properly available in WordPress context
+    if (typeof jQuery === 'undefined') {
+        console.error('[GridPlus] jQuery is not available!');
+        return;
+    }
+    
+    // Store jQuery reference for Light Gallery
+    window.GridPlusJQuery = $;
     GridPlus = {
         vars: {
             grid_on_ajax: false
         },
+        originalPositions: {}, // Store original positions for each grid
         init: function () {
             GridPlus.galleries = [];
             GridPlus.items = [];
             GridPlus.pagings = [];
+            
+            // Fix for Light Gallery jQuery compatibility
+            if (typeof $.fn.lightGallery !== 'undefined' && !$.fn.lightGallery._jQueryFixed) {
+                var originalLG = $.fn.lightGallery;
+                $.fn.lightGallery = function(options) {
+                    // Ensure this is a jQuery object
+                    var $this = $(this);
+                    return originalLG.call($this, options);
+                };
+                $.fn.lightGallery._jQueryFixed = true;
+            }
+            
+            GridPlus.initHashNavigation(); // Move this to the beginning
             GridPlus.initGrid();
             GridPlus.initCarousel();
             GridPlus.execCategoryFilter();
@@ -21,6 +44,35 @@ var GridPlus = GridPlus || {};
             GridPlus.initWindowScroll();
             GridPlus.initViewGallery();
             GridPlus.initAddToCartAjax();
+            GridPlus.initSearch();
+            
+            // Ensure event handlers remain bound after dynamic content changes
+            $(document).on('onAfterClose.lg', function() {
+                // Clear any lingering state
+                window.gridPlusUrlModule = null;
+                window.gridPlusForceModule = null;
+                $('.grid-post-item').removeClass('active');
+                
+                // If we came from a direct URL and haven't clicked yet, reinit to ensure handlers work
+                if (window.gridPlusFromDirectUrl) {
+                    window.gridPlusFromDirectUrl = false;
+                    
+                    // Ensure handlers are properly bound
+                    setTimeout(function() {
+                        // Force rebind of event delegation handlers
+                        $(document).off('mousedown.urlupdate').on('mousedown.urlupdate', 'a.view-gallery', function(e) {
+                            var $this = $(this);
+                            var $post_item = $this.closest('.grid-post-item');
+                            var moduleIndex = $('.grid-post-item').index($post_item) + 1;
+                            
+                            if (history.pushState && moduleIndex) {
+                                var newUrl = '/discover/' + moduleIndex;
+                                history.pushState({module: moduleIndex}, '', newUrl);
+                            }
+                        });
+                    }, 100);
+                }
+            });
         },
         initGrid: function ($container) {
             if(typeof($container) == 'undefined') {
@@ -64,6 +116,18 @@ var GridPlus = GridPlus || {};
                     disableDrag: true,
                     disableResize: true
                 };
+                // Initialize original positions if not already set
+                if (!GridPlus.originalPositions[$section_id]) {
+                    GridPlus.originalPositions[$section_id] = {};
+                    $('.grid-items .grid-post-item', $grid_container).each(function(idx) {
+                        var $link = $(this).find('a.view-gallery');
+                        var postId = $link.attr('data-post-id');
+                        if (postId) {
+                            GridPlus.originalPositions[$section_id][postId] = idx + 1;
+                        }
+                    });
+                }
+                
                 $('.grid-items .item', $grid_container).each(function ($index) {
                     $grid_items.push({
                         x: $(this).attr('data-gs-x'),
@@ -75,7 +139,8 @@ var GridPlus = GridPlus || {};
                         desktop_width: $(this).attr('data-desktop-gs-width'),
                         desktop_height: $(this).attr('data-desktop-gs-height'),
                         image_height: $(this).attr('data-image-height'),
-                        image_width: $(this).attr('data-image-width')
+                        image_width: $(this).attr('data-image-width'),
+                        original_index: $(this).attr('data-original-index')
                     });
                 });
 
@@ -98,6 +163,11 @@ var GridPlus = GridPlus || {};
                     $grid_stack_item.append($items[$index++]);
                     if ($index == $items.length) {
                         $index = 0;
+                    }
+                    
+                    // Transfer original-index to the grid-post-item
+                    if (node.original_index) {
+                        $('.grid-post-item', $grid_stack_item).attr('data-original-index', node.original_index);
                     }
 
                     $div_thumbnail = $('.thumbnail-image', $grid_stack_item);
@@ -158,6 +228,7 @@ var GridPlus = GridPlus || {};
                     $grid_container.trigger('gridInitCompleted');
                     setTimeout(function () {
                         GridPlus.itemAnimation($grid_container);
+                        GridPlus.preloadPostTags(); // Preload tags after grid is initialized
                     }, 300);
                 })
             });
@@ -550,8 +621,15 @@ var GridPlus = GridPlus || {};
 
         //$filter_type = 1 -> Category filter, = 2 -> Paging filter, = 3 -> Load more filter, = 4 -> Infinite scroll
         filter: function (elm, $section_id, $ajax_url, $category_id, $current_page, $filter_type, $nonce) {
-            var $container = $('#' + $section_id),
-                $grid_name = $container.attr('data-grid-name'),
+            var $container = $('#' + $section_id);
+            
+            // Prevent loading more items during search
+            if ($container.hasClass('search-active')) {
+                GridPlus.vars.grid_on_ajax = false;
+                return false;
+            }
+            
+            var $grid_name = $container.attr('data-grid-name'),
                 $ladda = null,
                 $this = $(elm),
                 $key = '',
@@ -618,6 +696,7 @@ var GridPlus = GridPlus || {};
 
                         GridPlus.initViewGallery($container);
                         GridPlus.initAddToCartAjax($container);
+                        GridPlus.preloadPostTags(); // Preload tags for new items
                         GridPlus.vars.grid_on_ajax = false;
                         if($this.closest('.grid-cate-expanded').length > 0) {
                             $this.closest('.grid-cate-expanded').children('ul').removeClass('active');
@@ -693,6 +772,7 @@ var GridPlus = GridPlus || {};
                         GridPlus.bindItemCarousel($container, $items, $filter_type);
                         GridPlus.initViewGallery($container);
                         GridPlus.initAddToCartAjax($container);
+                        GridPlus.preloadPostTags(); // Preload tags for new items
                         GridPlus.vars.grid_on_ajax = false;
                     },
                     error: function () {
@@ -836,11 +916,16 @@ var GridPlus = GridPlus || {};
                 $this.attr('data-spinner-size', '20');
             });
             $('a.page-numbers, .grid-load-more-wrap a.load-more, .grid-infinite-scroll-wrap a.infinite-scroll', $container).off('click').on('click', function (event) {
+                // Prevent pagination during search
+                var $section_id = $(this).parent().attr('data-section-id') || $(this).closest('[data-section-id]').attr('data-section-id');
+                if ($('#' + $section_id).hasClass('search-active')) {
+                    event.preventDefault();
+                    return false;
+                }
+                
                 if(!GridPlus.vars.grid_on_ajax) {
                     GridPlus.vars.grid_on_ajax = true;
-                    var $section_id = $(this).parent().attr('data-section-id'),
-                        $grid_stack_container = $('div[data-section-id="' + $section_id + '"]'),
-                        $category_id = $grid_stack_container.attr('data-current-category'),
+                    var $category_id = $grid_stack_container.attr('data-current-category'),
                         $ajax_url = $grid_stack_container.attr('data-ajax-url'),
                         $nonce = $grid_stack_container.attr('data-nonce'),
                         $href = $(this).attr('href'),
@@ -867,10 +952,21 @@ var GridPlus = GridPlus || {};
         },
 
         initInfiniteScroll: function(){
+            // Don't load more items if search is active
+            if ($('.search-active').length) {
+                return;
+            }
+            
             var windowTop =  $(window).scrollTop(),
                 windowBottom = windowTop + $(window).height(),
                 elemTop, elemBottom;
             $('.grid-infinite-scroll-wrap a.infinite-scroll:not(.infinited)').each(function(){
+                // Double-check: Don't trigger if parent container has search-active
+                var $sectionId = $(this).parent().attr('data-section-id');
+                if ($('#' + $sectionId).hasClass('search-active')) {
+                    return;
+                }
+                
                 elemTop = $(this).offset().top;
                 elemBottom = elemTop + $(this).height();
                 if((elemBottom <= windowBottom) && (elemTop >= windowTop)){
@@ -907,7 +1003,10 @@ var GridPlus = GridPlus || {};
 
         initWindowScroll: function(){
             $(window).scroll(function(){
-                GridPlus.initInfiniteScroll();
+                // Skip infinite scroll if search is active
+                if (!$('.search-active').length) {
+                    GridPlus.initInfiniteScroll();
+                }
                 GridPlus.initAppearScroll();
             })
         },
@@ -937,7 +1036,22 @@ var GridPlus = GridPlus || {};
                 $grid_plus_container = $container;
             }
             if(!$container.hasClass('attachment')) {
-                $('a.view-gallery', $container).off('click').on('click',function(event){
+                // Use event delegation for better reliability
+                $container.off('click.gridplus', 'a.view-gallery').on('click.gridplus', 'a.view-gallery', function(event){
+                    // Check if Light Gallery is already open or being initialized
+                    if ($('body').hasClass('lg-on') || $(this).data('lg-opening')) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return false;
+                    }
+                    
+                    // Mark as opening
+                    $(this).data('lg-opening', true);
+                    var $clickedElement = $(this);
+                    setTimeout(function() {
+                        $clickedElement.data('lg-opening', false);
+                    }, 2000);
+                    
                     event.preventDefault();
                     var $post_item = $(this).closest('.grid-post-item').addClass('active'),
                         $post_id = $(this).attr('data-post-id'),
@@ -945,34 +1059,251 @@ var GridPlus = GridPlus || {};
                         $ajax_url = $this.attr('data-ajax-url'),
                         ico = $('i',$this).attr('class'),
                         $lg = null;
+            
+                    
+                    // Check if module index was set explicitly (e.g., from URL)
+                    // Priority: 1) data-module-index attribute, 2) URL module number, 3) DOM position
+                    var urlModuleNumber = null;
+                    var urlMatch = window.location.pathname.match(/\/discover\/(\d+)\/?$/);
+                    if (urlMatch) {
+                        urlModuleNumber = parseInt(urlMatch[1]);
+                    }
+                    
+                    // Get the section ID to look up original positions
+                    var $section = $post_item.closest('.grid-plus-container');
+                    var sectionId = $section.attr('id');
+                    
+                    // Check for forced module first
+                    var domPosition = $('.grid-post-item').index($post_item) + 1;
+                    var dataModuleIndex = $this.attr('data-module-index') ? parseInt($this.attr('data-module-index')) : null;
+                    var originalIndex = $post_item.attr('data-original-index') ? parseInt($post_item.attr('data-original-index')) : null;
+                    
+                    // Try to get original position from stored mapping
+                    var storedPosition = null;
+                    if (GridPlus.originalPositions[sectionId] && GridPlus.originalPositions[sectionId][$post_id]) {
+                        storedPosition = GridPlus.originalPositions[sectionId][$post_id];
+                    }
+                    
+                    var $module_index;
+                    
+                    if (window.gridPlusForceModule) {
+                        $module_index = window.gridPlusForceModule;
+                        // Clear it immediately after using to prevent it affecting other clicks
+                        window.gridPlusForceModule = null;
+                    } else if (dataModuleIndex) {
+                        $module_index = dataModuleIndex;
+                    } else if (window.gridPlusUrlModule) {
+                        $module_index = window.gridPlusUrlModule;
+                        // Clear it after use to prevent it affecting subsequent clicks
+                        window.gridPlusUrlModule = null;
+                    } else if (storedPosition) {
+                        $module_index = storedPosition;
+                    } else if (originalIndex) {
+                        $module_index = originalIndex;
+                    } else {
+                        $module_index = domPosition;
+                    }
+                    
+                    
+                    // Check if URL was already updated by mousedown handler
+                    var intendedModule = $this.data('intended-module');
+                    if (intendedModule) {
+                        $this.removeData('intended-module');
+                    } else {
+                        // Fallback: Update URL if mousedown didn't fire
+                        if (history.pushState && $module_index) {
+                            var currentPath = window.location.pathname;
+                            var newUrl = '/discover/' + $module_index;
+                            if (currentPath !== newUrl && !currentPath.endsWith('/' + $module_index + '/')) {
+                                history.pushState({module: $module_index}, '', newUrl);
+                            }
+                        }
+                    }
+                    
                     $('i', $this).attr('class', 'fa fa-spinner fa-spin');
-                    if (typeof GridPlus.galleries[$post_id] == 'undefined') {
+                    // Force refresh if shift key is held
+                    var forceRefresh = event.shiftKey;
+                    
+                    if (typeof GridPlus.galleries[$post_id] == 'undefined' || forceRefresh) {
+                        // Add timestamp to prevent caching
+                        var timestamp = new Date().getTime();
                         $.ajax({
-                            url: 'https://arclab.io/wp-json/wp/v2/posts?_fields=module_fields,categories,tags,title.rendered,content.rendered&include[]=' + $post_id,
+                            url: 'https://arclab.io/wp-json/wp/v2/posts/' + $post_id + '?_embed&_=' + timestamp,
                             type: 'GET',
-                            success: function (data) {
+                            cache: false,
+                            success: function (response) {
+                                // Handle single post response (not array)
+                                var data = response; 
                                 $('i', $this).attr('class', ico);
                                 var $galleries = [{
-                                    src: data[0].module_fields.moduleImageURL[0],
+                                    src: data.module_fields.moduleImageURL[0],
                                     subHtml: '',
-                                    thumb: data[0].module_fields.moduleImageURL[0],
+                                    thumb: data.module_fields.moduleImageURL[0],
                                 }];
-                                $lg = $(this).lightGallery({
-                                    dynamic: true,
-                                    dynamicEl: $galleries,
-                                    hash: false,
-                                    download: true,
-                                    moduleImageURL: data[0].module_fields.moduleImageURL[0],
-                                    moduleLearnerURL: data[0].module_fields.moduleLearnerURL[0],
-                                    moduleEditorURL: data[0].module_fields.moduleEditorURL[0],
-                                    remixCounter: data[0].module_fields.remixCounter ? data[0].module_fields.remixCounter[0] : '0',
-                                    moduleContent: data[0].content.rendered,
-                                    moduleTitle: data[0].title.rendered,
-                                    ajax_url = $ajax_url,
-                                    post_id = $post_id,
-                                });
-                                GridPlus.light_gallery_after_open($lg);
-                                $post_item.removeClass('active');
+                                // Process tags into HTML
+                                var tagsHtml = '';
+                                
+                                // Try to get tags from embedded data first
+                                if (data._embedded && data._embedded['wp:term']) {
+                                    var terms = data._embedded['wp:term'];
+                                    // wp:term is an array of arrays, tags are usually at index 1
+                                    var tags = [];
+                                    terms.forEach(function(termGroup) {
+                                        termGroup.forEach(function(term) {
+                                            if (term.taxonomy === 'post_tag') {
+                                                tags.push(term);
+                                            }
+                                        });
+                                    });
+                                    
+                                    if (tags.length > 0) {
+                                        tagsHtml = tags.map(function(tag) {
+                                            return '<span class="module-tag">' + tag.name + '</span>';
+                                        }).join(' ');
+                                    }
+                                } 
+                                
+                                // Always fetch tags using our custom AJAX endpoint to bypass cache
+                                if (!tagsHtml || data.tags) {
+                                    try {
+                                        $.ajax({
+                                            url: $ajax_url,
+                                            type: 'POST',
+                                            async: false,
+                                            cache: false,
+                                            data: {
+                                                action: 'grid_plus_get_post_tags',
+                                                post_id: $post_id
+                                            },
+                                            success: function (response) {
+                                                var tagResponse = typeof response === 'string' ? JSON.parse(response) : response;
+                                                
+                                                if (tagResponse.success && tagResponse.tags && tagResponse.tags.length > 0) {
+                                                    tagsHtml = tagResponse.tags.map(function(tag) {
+                                                        return '<span class="module-tag">' + tag.name + '</span>';
+                                                    }).join(' ');
+                                                } else {
+                                                }
+                                            },
+                                            error: function(xhr, status, error) {
+                                                console.error('Failed to fetch tags from custom endpoint:', status, error);
+                                                // Fallback to REST API tags if available
+                                                if (data.tags && data.tags.length > 0) {
+                                                    $.ajax({
+                                                        url: 'https://arclab.io/wp-json/wp/v2/tags?include=' + data.tags.join(',') + '&per_page=100&_=' + timestamp,
+                                                        type: 'GET',
+                                                        async: false,
+                                                        cache: false,
+                                                        success: function (tagData) {
+                                                            tagsHtml = tagData.map(function(tag) {
+                                                                return '<span class="module-tag">' + tag.name + '</span>';
+                                                            }).join(' ');
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    } catch (e) {
+                                        console.error('Exception while fetching tags:', e);
+                                    }
+                                }
+                                
+                                if (!tagsHtml) {
+                                }
+                                
+                                // Store gallery data in cache
+                                GridPlus.galleries[$post_id] = {
+                                    galleries: $galleries,
+                                    moduleImageURL: data.module_fields.moduleImageURL[0],
+                                    moduleLearnerURL: data.module_fields.moduleLearnerURL[0],
+                                    moduleEditorURL: data.module_fields.moduleEditorURL[0],
+                                    remixCounter: data.module_fields.remixCounter ? data.module_fields.remixCounter[0] : '0',
+                                    moduleContent: data.content.rendered,
+                                    moduleTitle: data.title.rendered,
+                                    moduleTags: tagsHtml,
+                                    ajax_url: $ajax_url,
+                                    post_id: $post_id
+                                };
+                                
+                                
+                                // Destroy any existing instance first
+                                var existingInstance = $this.data('lightGallery');
+                                if (existingInstance) {
+                                    existingInstance.destroy(true);
+                                }
+                                
+                                try {
+                                    // Ensure jQuery is properly available for Light Gallery
+                                    var $element = $this;
+                                    if (!$element.jquery) {
+                                        $element = jQuery($this);
+                                    }
+                                    
+                                    $lg = $element.lightGallery({
+                                        dynamic: true,
+                                        dynamicEl: $galleries,
+                                        hash: false, // Disable hash URLs
+                                        galleryId: $post_id,
+                                        download: true,
+                                        fullScreen: false, // Disable fullscreen to avoid the error
+                                        enableSwipe: true,
+                                        enableDrag: true,
+                                        moduleImageURL: data.module_fields.moduleImageURL[0],
+                                        moduleLearnerURL: data.module_fields.moduleLearnerURL[0],
+                                        moduleEditorURL: data.module_fields.moduleEditorURL[0],
+                                        remixCounter: data.module_fields.remixCounter ? data.module_fields.remixCounter[0] : '0',
+                                        moduleContent: data.content.rendered,
+                                        moduleTitle: data.title.rendered,
+                                        moduleTags: tagsHtml,
+                                        ajax_url: $ajax_url,
+                                        post_id: $post_id,
+                                        module_index: $module_index, // Add module index
+                                        backdropDuration: 0 // Open immediately when triggered by URL
+                                    });
+                                    
+                                    
+                                    GridPlus.light_gallery_after_open($lg);
+                                    $post_item.removeClass('active');
+                                    
+                                    // Store module index globally for fallback
+                                    window.gridPlusCurrentModuleIndex = $module_index;
+                                    
+                                    // Ensure gallery opens immediately
+                                    var lgData = $element.data('lightGallery');
+                                    if (lgData) {
+                                        // Check if gallery needs to be opened (e.g., from URL)
+                                        if (!$('body').hasClass('lg-on')) {
+                                            setTimeout(function() {
+                                                // Trigger the dynamic element click
+                                                if (lgData.$items && lgData.$items.length > 0) {
+                                                    // Ensure $items is a jQuery object
+                                                    var $items = $(lgData.$items);
+                                                    $items.eq(0).trigger('click');
+                                                } else if (lgData.open) {
+                                                    lgData.open();
+                                                }
+                                            }, 50);
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('[GridPlus Debug] Error initializing Light Gallery:', e);
+                                    console.error('[GridPlus Debug] Error stack:', e.stack);
+                                    $post_item.removeClass('active');
+                                    
+                                    // Try alternative approach
+                                    try {
+                                        // Use jQuery directly
+                                        jQuery($this).lightGallery({
+                                            dynamic: true,
+                                            dynamicEl: $galleries,
+                                            hash: false,
+                                            galleryId: $post_id,
+                                            fullScreen: false // Disable problematic fullscreen
+                                        });
+                                    } catch (e2) {
+                                        console.error('[GridPlus Debug] Fallback also failed:', e2);
+                                    }
+                                }
                             },
                             error: function () {
                                 $('i', $this).attr('class', ico);
@@ -990,7 +1321,6 @@ var GridPlus = GridPlus || {};
                         //     success: function (data) {
                         //         $('i', $this).attr('class', ico);
                         //         var $galleries = JSON.parse(data);
-                        //         console.log($galleries);
                         //         if(typeof $galleries !='undefined' && $.isArray($galleries) && $galleries.length > 0){
                         //             $lg = $(this).lightGallery({
                         //                 dynamic: true,
@@ -1009,15 +1339,69 @@ var GridPlus = GridPlus || {};
                         //     }
                         // });
                     }else{
-                        $lg = $(this).lightGallery({
-                            dynamic: true,
-                            dynamicEl: GridPlus.galleries[$post_id],
-                            hash: false,
-                            download: true
-                        });
-                        GridPlus.light_gallery_after_open($lg);
-                        $post_item.removeClass('active');
-                        $('i', $this).attr('class', ico);
+                        var cachedData = GridPlus.galleries[$post_id];
+                        
+                        // Destroy any existing instance first
+                        var existingInstance = $this.data('lightGallery');
+                        if (existingInstance) {
+                            existingInstance.destroy(true);
+                        }
+                        
+                        try {
+                            // Ensure jQuery is properly available for Light Gallery
+                            var $element = $this;
+                            if (!$element.jquery) {
+                                $element = jQuery($this);
+                            }
+                            
+                            $lg = $element.lightGallery({
+                                dynamic: true,
+                                dynamicEl: cachedData.galleries,
+                                hash: false, // Disable hash URLs
+                                galleryId: cachedData.post_id,
+                                download: true,
+                                fullScreen: false, // Disable fullscreen to avoid the error
+                                enableSwipe: true,
+                                enableDrag: true,
+                                closable: true, // Ensure close button is shown
+                                showAfterLoad: true,
+                                moduleImageURL: cachedData.moduleImageURL,
+                                moduleLearnerURL: cachedData.moduleLearnerURL,
+                                moduleEditorURL: cachedData.moduleEditorURL,
+                                remixCounter: cachedData.remixCounter,
+                                moduleContent: cachedData.moduleContent,
+                                moduleTitle: cachedData.moduleTitle,
+                                moduleTags: cachedData.moduleTags,
+                                ajax_url: cachedData.ajax_url,
+                                post_id: cachedData.post_id,
+                                module_index: $module_index, // Use the already calculated module index
+                                backdropDuration: 0 // Open immediately when triggered by URL
+                            });
+                            GridPlus.light_gallery_after_open($lg);
+                            $post_item.removeClass('active');
+                            $('i', $this).attr('class', ico);
+                            
+                            // Store module index globally for fallback
+                            window.gridPlusCurrentModuleIndex = $module_index;
+                            
+                            // Ensure gallery opens immediately for cached data
+                            var lgData = $element.data('lightGallery');
+                            if (lgData && !$('body').hasClass('lg-on')) {
+                                setTimeout(function() {
+                                    if (lgData.$items && lgData.$items.length > 0) {
+                                        // Ensure $items is a jQuery object
+                                        var $items = $(lgData.$items);
+                                        $items.eq(0).trigger('click');
+                                    } else if (lgData.open) {
+                                        lgData.open();
+                                    }
+                                }, 50);
+                            }
+                        } catch (e) {
+                            console.error('[GridPlus Debug] Error with cached Light Gallery:', e);
+                            $post_item.removeClass('active');
+                            $('i', $this).attr('class', ico);
+                        }
                     }
                 });
             }
@@ -1064,13 +1448,160 @@ var GridPlus = GridPlus || {};
         },
 
         light_gallery_after_open: function($lg){
-            $lg.on('onAfterOpen.lg', function (event, index) {
+            $lg.on('onAfterOpen.lg', function (event, index) {           
                 $('.lg-thumb-outer').css('opacity', '0');
                 setTimeout(function () {
                     $('.lg-has-thumb').removeClass('lg-thumb-open');
                     $('.lg-thumb-outer').css('opacity', '1');
                 }, 700);
+                
+                // Remove any toolbar that exists outside lg-outer immediately
+                $('.lg-toolbar').each(function() {
+                    var $toolbar = $(this);
+                    if (!$toolbar.parent().hasClass('lg-outer')) {
+                        $toolbar.remove();
+                    }
+                });
+                
+                // Try multiple times to add the copy button
+                var attempts = 0;
+                var maxAttempts = 10;
+                
+                var addCopyButton = function() {
+                    attempts++;                    
+                    // Look for the module content (white popup)
+                    var $moduleContent = $('.module-content:visible').first();
+                    
+                    if ($moduleContent.length === 0) {
+                        if (attempts < maxAttempts) {
+                            setTimeout(addCopyButton, 200);
+                        }
+                        return;
+                    }
+                    
+                    // Check if we already added our custom copy button container
+                    if ($moduleContent.find('.gridplus-copy-container').length > 0) {
+                        return;
+                    }
+                                        
+                    // Create a custom container for the copy button
+                    var copyContainer = '<div class="gridplus-copy-container">' +
+                        '<a class="gridplus-copy-btn" href="#" title="Copy link">' +
+                        '<i class="copy icon"></i>' +
+                        '<span style="font-family: FontAwesome; display: none;">&#xf0c5;</span>' +
+                        '</a>' +
+                        '</div>';
+                    
+                    // Append to module-content (white popup)
+                    $moduleContent.prepend(copyContainer);
+                    
+                    // Check if Semantic UI icons are loaded - improved detection
+                    setTimeout(function() {
+                        var $icon = $('.gridplus-copy-btn i.icon');
+                        if ($icon.length) {
+                            var fontFamily = window.getComputedStyle($icon[0], ':before').getPropertyValue('font-family');
+                            
+                            var beforeContent = window.getComputedStyle($icon[0], ':before').getPropertyValue('content');
+                            
+                            if (!fontFamily || fontFamily.toLowerCase().indexOf('icons') === -1 || beforeContent === 'none' || beforeContent === '') {
+                                $icon.hide();
+                                $('.gridplus-copy-btn span').show();
+                            } else {
+                                console.log('[GridPlus] Using Semantic UI icons');
+                            }
+                        }
+                    }, 500); // Increased delay to ensure fonts are loaded
+                    
+                    // Bind the click event for our custom copy button
+                    $(document).off('click.gridplus-copy').on('click.gridplus-copy', '.gridplus-copy-btn', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[GridPlus] Copy button clicked');
+                        
+                        // Get the current URL without query parameters or hash
+                        var currentUrl = window.location.href.split('?')[0].split('#')[0];
+                                                
+                        // Copy to clipboard
+                        GridPlus.copyToClipboard(currentUrl);
+                        return false;
+                    });
+                    
+                    return true;
+                };
+                
+                // Start trying to add the button
+                setTimeout(addCopyButton, 100);
             });
+            
+            // Clean up event handler when lightbox closes
+            $lg.on('onBeforeClose.lg', function() {
+                $(document).off('click.gridplus-copy');
+            });
+        },
+        
+        copyToClipboard: function(text) {
+            // Create a temporary textarea element
+            var $temp = $('<textarea>');
+            $('body').append($temp);
+            $temp.val(text).select();
+            
+            try {
+                // Try to copy using the modern API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        GridPlus.showCopyFeedback(true);
+                    }, function() {
+                        // Fallback to execCommand
+                        GridPlus.copyWithExecCommand($temp, text);
+                    });
+                } else {
+                    // Fallback to execCommand
+                    GridPlus.copyWithExecCommand($temp, text);
+                }
+            } catch (err) {
+                GridPlus.showCopyFeedback(false);
+            }
+            
+            $temp.remove();
+        },
+        
+        copyWithExecCommand: function($temp, text) {
+            try {
+                var successful = document.execCommand('copy');
+                GridPlus.showCopyFeedback(successful);
+            } catch (err) {
+                GridPlus.showCopyFeedback(false);
+            }
+        },
+        
+        showCopyFeedback: function(success) {
+            var $copyButton = $('.gridplus-copy-btn');
+            var originalHtml = $copyButton.html();
+            var usingFontAwesome = $('.gridplus-copy-btn span:visible').length > 0;
+            
+            if (success) {
+                if (usingFontAwesome) {
+                    $copyButton.html('<span style="font-family: FontAwesome;">&#xf00c;</span>');
+                } else {
+                    $copyButton.html('<i class="check icon"></i>');
+                }
+                $copyButton.addClass('copy-success');
+                setTimeout(function() {
+                    $copyButton.html(originalHtml);
+                    $copyButton.removeClass('copy-success');
+                }, 2000);
+            } else {
+                if (usingFontAwesome) {
+                    $copyButton.html('<span style="font-family: FontAwesome;">&#xf00d;</span>');
+                } else {
+                    $copyButton.html('<i class="times icon"></i>');
+                }
+                $copyButton.addClass('copy-error');
+                setTimeout(function() {
+                    $copyButton.html(originalHtml);
+                    $copyButton.removeClass('copy-error');
+                }, 2000);
+            }
         },
 
         getPageNumberFromHref: function ($href) {
@@ -1185,11 +1716,563 @@ var GridPlus = GridPlus || {};
                     GridPlus.initFilterByCategory();
                 }
             });
+        },
+        
+        clearGalleryCache: function() {
+            GridPlus.galleries = [];
+        },
+        
+        preloadPostTags: function() {
+            // Initialize tags cache if not exists
+            if (!GridPlus.postTags) {
+                GridPlus.postTags = {};
+            }
+            
+            var postsToLoad = [];
+            
+            // Find all posts in the grid
+            $('.grid-post-item a.view-gallery').each(function() {
+                var postId = $(this).attr('data-post-id');
+                var ajaxUrl = $(this).attr('data-ajax-url');
+                
+                if (postId && !GridPlus.postTags[postId]) {
+                    postsToLoad.push({id: postId, url: ajaxUrl});
+                }
+            });
+            
+            
+            // Fetch tags for each post
+            postsToLoad.forEach(function(post) {
+                $.ajax({
+                    url: post.url,
+                    type: 'POST',
+                    data: {
+                        action: 'grid_plus_get_post_tags',
+                        post_id: post.id
+                    },
+                    success: function(response) {
+                        var tagResponse = typeof response === 'string' ? JSON.parse(response) : response;
+                        
+                        if (tagResponse.success && tagResponse.tags && tagResponse.tags.length > 0) {
+                            // Store tags as lowercase string for easy searching
+                            var tagNames = tagResponse.tags.map(function(tag) {
+                                return tag.name.toLowerCase();
+                            }).join(' ');
+                            GridPlus.postTags[post.id] = tagNames;
+                        } else {
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to load tags for post ' + post.id + ':', error);
+                    }
+                });
+            });
+        },
+        
+        initSearch: function() {
+            // Add debounce to prevent too many searches while typing
+            var searchTimeout;
+            
+            // Preload tags for all posts when grid is loaded
+            GridPlus.preloadPostTags();
+            
+            $('.grid-search-input').on('keyup', function() {
+                clearTimeout(searchTimeout);
+                var $input = $(this);
+                
+                searchTimeout = setTimeout(function() {
+                    var searchText = $input.val().toLowerCase().trim();
+                    var sectionId = $input.data('section-id');
+                    var $gridContainer = $('#' + sectionId);
+                    var $gridItems = $gridContainer.find('.grid-stack-item');
+                    var matchedCount = 0;
+                    var totalCount = $gridItems.length;
+                    
+                    if (searchText === '') {
+                        // Show all items
+                        $gridItems.removeClass('search-hidden').addClass('search-visible');
+                        matchedCount = totalCount;
+                        
+                        // Remove search active class from container
+                        $gridContainer.removeClass('search-active');
+                        
+                        // Reset infinite scroll state
+                        $('.grid-infinite-scroll-wrap a.infinite-scroll').removeClass('infinited');
+                    } else {
+                        // Create array of search terms (split by space for multiple keyword search)
+                        var searchTerms = searchText.split(/\s+/).filter(function(term) {
+                            return term.length > 0;
+                        });
+                        
+                        var matchedItems = [];
+                        var unmatchedItems = [];
+                        
+                        $gridItems.each(function() {
+                            var $item = $(this);
+                            var $postItem = $item.find('.grid-post-item');
+                            
+                            // Get searchable content from various fields
+                            // Check for both .grid-title and .title classes since different skins use different classes
+                            // Decode HTML entities to handle special characters like & (&amp;)
+                            var decodeHtmlEntities = function(text) {
+                                var txt = document.createElement("textarea");
+                                txt.innerHTML = text;
+                                return txt.value;
+                            };
+                            
+                            var title = decodeHtmlEntities($item.find('.grid-title, .title').first().text()).toLowerCase().trim();
+                            var content = decodeHtmlEntities($item.find('.grid-excerpt, .excerpt').first().text()).toLowerCase().trim();
+                            var category = decodeHtmlEntities($item.find('.grid-category, .category').first().text()).toLowerCase().trim();
+                            
+                            // Debug: Log what we're finding
+                            if (searchTerms.length === 1 && searchTerms[0] === 'debug') {
+                            }
+                            
+                            // Get post ID to check tags from cache
+                            var postId = $postItem.find('a.view-gallery').attr('data-post-id');
+                            var tags = '';
+                            
+                            // First check our preloaded tags cache
+                            if (postId && GridPlus.postTags && GridPlus.postTags[postId]) {
+                                tags = decodeHtmlEntities(GridPlus.postTags[postId]);
+                            }
+                            // Then check if we have cached gallery data with tags
+                            else if (postId && GridPlus.galleries[postId] && GridPlus.galleries[postId].moduleTags) {
+                                // Extract text from tag HTML
+                                var tempDiv = $('<div>').html(GridPlus.galleries[postId].moduleTags);
+                                tags = decodeHtmlEntities(tempDiv.text()).toLowerCase();
+                            } else {
+                            }
+                            
+                            // Remove data attribute checking to avoid false matches
+                            // Only search through title, content, category, and tags
+                            
+                            // Priority search: First check title and category for exact matches
+                            var titleAndCategory = title + ' ' + category;
+                            
+                            // Check if search term matches in priority fields
+                            var matchFound = false;
+                            
+                            // For single word searches, do partial matching
+                            if (searchTerms.length === 1) {
+                                var term = searchTerms[0];
+                                // Use partial matching - remove word boundaries for substring search
+                                var regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                                
+                                // Priority 1: Check title
+                                if (regex.test(title)) {
+                                    matchFound = true;
+                                }
+                                // Priority 2: Check category
+                                else if (regex.test(category)) {
+                                    matchFound = true;
+                                }
+                                // Priority 3: Check tags
+                                else if (regex.test(tags)) {
+                                    matchFound = true;
+                                }
+                            } else {
+                                // For multiple words, all must be found in title, category or tags
+                                var combinedContent = title + ' ' + category + ' ' + tags;
+                                matchFound = searchTerms.every(function(term) {
+                                    // Use partial matching for each term
+                                    var regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                                    return regex.test(combinedContent);
+                                });
+                            }
+                            
+                            var matchesAllTerms = matchFound;
+                            
+                            if (matchesAllTerms) {
+                                $item.removeClass('search-hidden').addClass('search-visible');
+                                matchedCount++;
+                                
+                                // Optional: Highlight matched terms
+                                if (searchTerms.length === 1) {
+                                    GridPlus.highlightSearchTerm($item, searchTerms[0]);
+                                }
+                            } else {
+                                $item.removeClass('search-visible').addClass('search-hidden');
+                                GridPlus.removeHighlight($item);
+                            }
+                        });
+                        
+                        // Add search active class to container
+                        $gridContainer.addClass('search-active');
+                    }
+                    
+                    // Show search results count
+                    var $searchResults = $gridContainer.find('.grid-search-results');
+                    if ($searchResults.length === 0) {
+                        $searchResults = $('<div class="grid-search-results"></div>');
+                        $gridContainer.find('.grid-search-box').after($searchResults);
+                    }
+                    
+                    if (searchText !== '') {
+                        var resultsText = 'Found ' + matchedCount + ' of ' + totalCount + ' modules';
+                        if (matchedCount === 0) {
+                            resultsText = 'No modules found matching "' + searchText + '"';
+                        }
+                        $searchResults.html(resultsText).show();
+                    } else {
+                        $searchResults.hide();
+                    }
+                    
+                    // Trigger custom event for other components
+                    $gridContainer.trigger('gridSearchComplete', {
+                        searchText: searchText,
+                        matchedCount: matchedCount,
+                        totalCount: totalCount
+                    });
+                }, 300); // 300ms debounce delay
+            });
+            
+            // Clear search on ESC key
+            $('.grid-search-input').on('keydown', function(e) {
+                if (e.keyCode === 27) { // ESC key
+                    $(this).val('').trigger('keyup');
+                }
+            });
+        },
+        
+        // Helper function to highlight search terms
+        highlightSearchTerm: function($item, term) {
+            // Remove existing highlights first
+            GridPlus.removeHighlight($item);
+            
+            // Only highlight in title and excerpt for better UX
+            var $elements = $item.find('.grid-title, .grid-excerpt');
+            
+            $elements.each(function() {
+                var $elem = $(this);
+                var text = $elem.text();
+                var regex = new RegExp('(' + term + ')', 'gi');
+                
+                if (regex.test(text)) {
+                    var newHtml = text.replace(regex, '<span class="search-highlight">$1</span>');
+                    $elem.html(newHtml);
+                }
+            });
+        },
+        
+        // Helper function to remove highlights
+        removeHighlight: function($item) {
+            $item.find('.search-highlight').each(function() {
+                var $this = $(this);
+                $this.replaceWith($this.text());
+            });
+        },
+        
+        initHashNavigation: function() {
+            // Handle clean URL navigation
+            
+            // Update URL when lightbox opens
+            $(document).on('onAfterOpen.lg', function(event) {
+                var $lg = $(event.target).data('lightGallery');
+                
+                // Clear the forced module after Light Gallery opens
+                if (window.gridPlusForceModule) {
+                    window.gridPlusForceModule = null;
+                }
+                
+                // URL is already updated in the click handler, so we just log here
+            });
+            
+            // Listen for custom Light Gallery navigation
+            $(document).on('click', '.lg-prev, .lg-next', function() {
+                
+                // Get current module from URL
+                var currentPath = window.location.pathname;
+                var currentModuleMatch = currentPath.match(/\/discover\/(\d+)\/?$/);
+                var currentModule = currentModuleMatch ? parseInt(currentModuleMatch[1]) : 1;
+                
+                // Get total modules
+                var totalModules = $('.grid-post-item').length;
+                var newModule = currentModule;
+                
+                if ($(this).hasClass('lg-prev')) {
+                    newModule = currentModule > 1 ? currentModule - 1 : totalModules;
+                } else {
+                    newModule = currentModule < totalModules ? currentModule + 1 : 1;
+                }
+                
+                
+                // Update URL
+                if (history.pushState && newModule !== currentModule) {
+                    var newUrl = '/discover/' + newModule;
+                    history.pushState({module: newModule}, '', newUrl);
+                    
+                    // Close current gallery and open new one
+                    var $lg = $('.lg-outer').data('lightGallery');
+                    if ($lg) {
+                        $lg.destroy();
+                        
+                        // Open the new module
+                        setTimeout(function() {
+                            var $targetModule = $('.grid-post-item').eq(newModule - 1);
+                            var $link = $targetModule.find('a.view-gallery');
+                            if ($link.length) {
+                                window.gridPlusForceModule = newModule;
+                                $link.trigger('click');
+                            }
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Update URL when lightbox closes
+            $(document).on('onBeforeClose.lg', function(event) {
+                if (history.pushState) {
+                    // Return to base /discover/ URL
+                    var baseUrl = '/discover/';
+                    history.pushState({}, '', baseUrl);
+                }
+            });
+            
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.module) {
+                    // Open the module
+                    var $module = $('.grid-post-item:eq(' + (event.state.module - 1) + ')');
+                    if ($module.length) {
+                        var $link = $module.find('a.view-gallery');
+                        if ($link.length) {
+                            $link.trigger('click');
+                        }
+                    }
+                } else {
+                    // Close any open lightbox
+                    var $lg = $('.lg-outer').data('lightGallery');
+                    if ($lg) {
+                        $lg.destroy();
+                    }
+                }
+            });
         }
     };
 
+    // Early module detection - handle /discover/N URLs directly
+    (function() {
+        // Check if we're on a /discover/N URL
+        var currentPath = window.location.pathname;
+        var pathMatch = currentPath.match(/\/discover\/(\d+)\/?$/);
+        
+        if (pathMatch && pathMatch[1]) {
+            var moduleNumber = parseInt(pathMatch[1]);
+            
+            // Store the module number to open after grid loads
+            window.gridPlusModuleToOpen = moduleNumber;
+            // Also store as the URL module to force Light Gallery to use it
+            window.gridPlusForceModule = moduleNumber;
+        }
+    })();
+    
     $(document).ready(function () {
+        
+        // Track if we came from a direct URL access
+        window.gridPlusFromDirectUrl = window.location.pathname.match(/\/discover\/(\d+)\/?$/) !== null;
+        
+        // Add early URL update handler using event delegation with higher priority
+        $(document).on('mousedown.urlupdate', 'a.view-gallery', function(e) {
+            
+            var $this = $(this);
+            var $post_item = $this.closest('.grid-post-item');
+            var $section = $post_item.closest('.grid-plus-container');
+            var sectionId = $section.attr('id');
+            var $post_id = $this.attr('data-post-id');
+            
+            // Get module index
+            var domPosition = $('.grid-post-item').index($post_item) + 1;
+            var storedPosition = null;
+            if (GridPlus.originalPositions && GridPlus.originalPositions[sectionId] && GridPlus.originalPositions[sectionId][$post_id]) {
+                storedPosition = GridPlus.originalPositions[sectionId][$post_id];
+            }
+            
+            var moduleIndex = storedPosition || domPosition;
+            
+            // Update URL immediately on mousedown (before click)
+            if (history.pushState && moduleIndex) {
+                var currentPath = window.location.pathname;
+                var newUrl = '/discover/' + moduleIndex;
+                if (currentPath !== newUrl) {
+                    history.pushState({module: moduleIndex}, '', newUrl);
+                }
+            }
+            
+            // Store the module index for the click handler
+            $this.data('intended-module', moduleIndex);
+            
+            // Don't prevent default - let events continue
+        });
+        
         GridPlus.init();
+        
+        var moduleNumber = null;
+        
+        // First check if we have a module number from early detection
+        if (window.gridPlusModuleToOpen) {
+            moduleNumber = window.gridPlusModuleToOpen;
+            delete window.gridPlusModuleToOpen; // Clean up
+        }
+        
+        // Check for direct path-based URL like /discover/1
+        if (!moduleNumber) {
+            var pathMatch = window.location.pathname.match(/\/discover\/(\d+)\/?$/);
+            if (pathMatch && pathMatch[1]) {
+                moduleNumber = parseInt(pathMatch[1]);
+            }
+        }
+        
+        // Check for hash parameter like /discover/#open=1
+        if (!moduleNumber) {
+            var hashMatch = window.location.hash.match(/#open=(\d+)/);
+            if (hashMatch && hashMatch[1]) {
+                moduleNumber = parseInt(hashMatch[1]);
+                // Clear the hash after reading it
+                history.replaceState(null, null, window.location.pathname);
+            }
+        }
+        
+        // Fallback to query parameter like /discover/?m=1
+        if (!moduleNumber) {
+            var urlParams = new URLSearchParams(window.location.search);
+            var moduleParam = urlParams.get('m');
+            if (moduleParam) {
+                moduleNumber = parseInt(moduleParam);
+            }
+        }
+        
+        // If we have a module number, open it
+        if (moduleNumber && moduleNumber > 0) {
+            
+            // Function to open the module
+            var openModule = function() {
+                
+                // Check if grid exists
+                var $gridContainer = $('.grid-plus-container');
+                if (!$gridContainer.length) {
+                    return false;
+                }
+                
+                // Check all grid items - try multiple selectors
+                var $gridItems = $('.grid-post-item');
+                if (!$gridItems.length) {
+                    // Try alternative selector
+                    $gridItems = $('.grid-stack-item');
+                }
+                
+                var totalModules = $gridItems.length;
+                
+                // Log first few items for debugging
+                if (totalModules > 0) {
+                    if (totalModules >= 42) {
+                    }
+                }
+                
+                if (totalModules === 0) {
+                    return false;
+                }
+                
+                // Don't validate max number if we're checking if module exists
+                // Module 42 might exist even if there are exactly 42 modules
+                if (moduleNumber < 1) {
+                    return true; // Stop trying
+                }
+                
+                // Find the specific module (0-indexed)
+                var $targetModule = $gridItems.eq(moduleNumber - 1);
+                
+                // Check if module exists
+                if (!$targetModule.length || moduleNumber > totalModules) {
+                    
+                    if (attempts === 0) {
+                        alert('Module ' + moduleNumber + ' does not exist. This page has ' + totalModules + ' modules.');
+                        // DO NOT preserve URL for non-existent modules - redirect to base
+                        // Use replace to avoid creating history entry
+                        window.location.replace('/discover/');
+                    }
+                    return true; // Stop trying
+                }
+                
+                
+                // Find the link to click
+                var $link = $targetModule.find('a.view-gallery');
+                if (!$link.length) {
+                    // Try alternative selectors
+                    $link = $targetModule.find('a[data-post-id]');
+                    if (!$link.length) {
+                        $link = $targetModule.find('a').first();
+                    }
+                }
+                
+                if ($link.length) {
+                    
+                    // Force update URL to preserve module number
+                    if (history.pushState) {
+                        history.pushState({module: moduleNumber}, '', '/discover/' + moduleNumber);
+                    }
+                    
+                    // Set the module index on the link for Light Gallery
+                    $link.attr('data-module-index', moduleNumber);
+                    
+                    // Store the intended module globally to ensure Light Gallery uses it
+                    window.gridPlusForceModule = moduleNumber;
+                    
+                    // Trigger click
+                    
+                    // Check if click handlers are attached
+                    var events = $._data($link[0], 'events');
+                    if (events && events.click) {
+                    } else {
+                        GridPlus.initViewGallery($('.grid-plus-container'));
+                        // Wait a bit for initialization
+                        setTimeout(function() {
+                            // Ensure the force module is still set
+                            window.gridPlusForceModule = moduleNumber;
+                            $link.attr('data-module-index', moduleNumber);
+                            $link.trigger('click');
+                        }, 500);
+                        return true;
+                    }
+                    
+                    $link.trigger('click');
+                    
+                    // Also try native click as fallback
+                    setTimeout(function() {
+                        if (!$('.lg-on').length) {
+                            if ($('.lg-outer').length) {
+                            } else {
+                            }
+                            
+                            if ($link[0] && $link[0].click) {
+                                $link[0].click();
+                            }
+                        } else {
+                        }
+                    }, 300);
+                    
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            
+            // Try to open immediately
+            if (!openModule()) {
+                var attempts = 0;
+                var maxAttempts = 30; // More attempts
+                var retryInterval = setInterval(function() {
+                    attempts++;
+                    
+                    if (openModule() || attempts >= maxAttempts) {
+                        clearInterval(retryInterval);
+                        if (attempts >= maxAttempts) {
+                        }
+                    }
+                }, 300); // Faster retries
+            }
+        } else {
+        }
     });
 
     var callback_after_resize;
