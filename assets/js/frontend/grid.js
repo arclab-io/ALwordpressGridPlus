@@ -1487,7 +1487,7 @@ var GridPlus = GridPlus || {};
                     // Create a custom container for the copy button
                     var copyContainer = '<div class="gridplus-copy-container">' +
                         '<a class="gridplus-copy-btn" href="#" title="Copy link">' +
-                        '<i class="copy icon"></i>' +
+                        '<i class="linkify icon"></i>' +
                         '<span style="font-family: FontAwesome; display: none;">&#xf0c5;</span>' +
                         '</a>' +
                         '</div>';
@@ -1576,32 +1576,29 @@ var GridPlus = GridPlus || {};
         
         showCopyFeedback: function(success) {
             var $copyButton = $('.gridplus-copy-btn');
-            var originalHtml = $copyButton.html();
-            var usingFontAwesome = $('.gridplus-copy-btn span:visible').length > 0;
+            
+            // Remove any existing feedback text
+            $('.gridplus-copy-feedback').remove();
+            
+            // Create feedback text element
+            var feedbackText = success ? 'Link copied!' : 'Copy failed';
+            var feedbackColor = success ? '#4CAF50' : '#f44336';
+            var $feedback = $('<div class="gridplus-copy-feedback" style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: ' + feedbackColor + '; color: white; padding: 6px 12px; border-radius: 4px; font-size: 14px; white-space: nowrap; z-index: 10000;">' + feedbackText + '</div>');
+            
+            // Add feedback text above the button
+            $copyButton.css('position', 'relative').append($feedback);
             
             if (success) {
-                if (usingFontAwesome) {
-                    $copyButton.html('<span style="font-family: FontAwesome;">&#xf00c;</span>');
-                } else {
-                    $copyButton.html('<i class="check icon"></i>');
-                }
                 $copyButton.addClass('copy-success');
-                setTimeout(function() {
-                    $copyButton.html(originalHtml);
-                    $copyButton.removeClass('copy-success');
-                }, 2000);
             } else {
-                if (usingFontAwesome) {
-                    $copyButton.html('<span style="font-family: FontAwesome;">&#xf00d;</span>');
-                } else {
-                    $copyButton.html('<i class="times icon"></i>');
-                }
                 $copyButton.addClass('copy-error');
-                setTimeout(function() {
-                    $copyButton.html(originalHtml);
-                    $copyButton.removeClass('copy-error');
-                }, 2000);
             }
+            
+            // Remove feedback after 2 seconds
+            setTimeout(function() {
+                $('.gridplus-copy-feedback').remove();
+                $copyButton.removeClass('copy-success copy-error');
+            }, 2000);
         },
 
         getPageNumberFromHref: function ($href) {
