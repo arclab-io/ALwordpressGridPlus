@@ -651,7 +651,7 @@
 				_this.$el.trigger('hasVideo.lg', [index, _src, _html]);
 			} else {
 				// _this.$slide.eq(index).prepend('<div class="lg-img-wrap"><img class="lg-object lg-image" src="' + _src + '" /></div>');
-				_this.$slide.eq(index).prepend(`<div class="lg-img-wrap"><div class="module-parent"><div class="module-content"><iframe class="module-iframe" src="${this.s.moduleLearnerURL}"></iframe><div class="module-description"><div><h3 class="module-title">${this.s.moduleTitle}</h3><p>${this.s.moduleContent}</p></div><div class="module-button-remix-div"><a href="${this.s.moduleEditorURL}" target="_parent" class="button module-editor-button">Use Template</a><p class="module-remix-counter">Remixed ${this.s.remixCounter} times</p></div></div></div></div></div>`);
+				_this.$slide.eq(index).prepend(`<div class="lg-img-wrap"><div class="module-parent"><div class="module-content"><iframe class="module-iframe" src="${this.s.moduleLearnerURL}"></iframe><div class="module-description"><div><h3 class="module-title">${this.s.moduleTitle}</h3>${this.s.moduleTags ? `<div class="module-tags">${this.s.moduleTags}</div>` : ''}<p>${this.s.moduleContent}</p></div><div class="module-button-remix-div"><a href="${this.s.moduleEditorURL}" target="_parent" class="button module-editor-button">Use Template</a><p class="module-remix-counter">Remixed ${this.s.remixCounter} times</p></div></div></div></div></div>`);
 			}
 
 			_this.$el.trigger('onAferAppendSlide.lg', [index]);

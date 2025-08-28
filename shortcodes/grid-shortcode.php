@@ -25,24 +25,16 @@ $height_ratio = $grid_config['height_ratio'];
 $width_ratio = $grid_config['width_ratio'];
 $gutter = $grid_config['gutter'];
 $use_image = isset($grid_config['use_image']) ? $grid_config['use_image'] : 'full' ;
-$item_per_page = isset($grid_config['item_per_page']) ? $grid_config['item_per_page'] : 8;
-$total_item = isset($grid_config['total_item']) ? $grid_config['total_item'] : -1;
-if(intval($total_item) == 0) {
-    $total_item = -1;
-}
-$pagination_type = $grid_config['pagination_type'];
-if($pagination_type == 'show_all') {
-    $item_per_page = -1;
-}
-$pagination_none = (empty($pagination_type) || $pagination_type == 'show_all') ? true : false;
-if((intval($total_item) != -1 && intval($item_per_page) >= intval($total_item)) || empty($pagination_type)) {
-    $pagination_type = 'show_all';
-}
+// Force show all posts regardless of saved settings
+$item_per_page = -1;
+$total_item = -1;
+$pagination_type = 'show_all';
+$pagination_none = true;
+
 $fix_item_height = isset($grid_config['fix_item_height']) ? $grid_config['fix_item_height'] : 0;
 $crop_image = isset($grid_config['crop_image']) ? $grid_config['crop_image'] : 'false';
 $crop_image = 'true' == $crop_image ? true : false;
 $disable_link = isset($grid_config['disable_link']) ? $grid_config['disable_link'] : 'false';
-$item_per_page = ($total_item > 0 && ($item_per_page < 0 || $total_item < $item_per_page)) ? intval($total_item) : intval($item_per_page);
 
 $authors = $grid_data_source['authors'];
 $post_type = $grid_data_source['post_type'];
@@ -186,6 +178,12 @@ $grid_stack_class = ($layout_type == 'metro' && $columns != 5) ? 'grid-stack' : 
                 'cate_multi_line' => $cate_multi_line
             ));
         } ?>
+        
+        <!-- Search Box -->
+        <div class="grid-search-box">
+            <input type="text" class="grid-search-input" placeholder="Search by topic, industry... e.g. safety / construction..." data-section-id="<?php echo esc_attr($section_id); ?>">
+            <i class="grid-search-icon fa fa-search"></i>
+        </div>
 
         <div class="<?php echo esc_attr($grid_stack_class); ?>" data-layout="<?php echo esc_attr($layout_type); ?>"
              style="height: <?php echo esc_attr($grid_config['height']); ?>px">
@@ -225,7 +223,7 @@ $grid_stack_class = ($layout_type == 'metro' && $columns != 5) ? 'grid-stack' : 
                     $cat_filter .= $term->slug . ' ';
                     $cat .= $term->name . ', ';
                 }
-                $cat = rtrim($cat, ', ');
+                $cat = rtrim($cat, ', ');              
 
 	            $ico_gallery = 'fa fa-search';
 	            $post_format = Grid_Plus_Base::gf_get_post_format(get_the_ID());
@@ -257,6 +255,7 @@ $grid_stack_class = ($layout_type == 'metro' && $columns != 5) ? 'grid-stack' : 
                      data-gs-width="<?php echo($grid_layout[$index]['width']); ?>"
                      data-gs-height="<?php echo($grid_layout[$index]['height']); ?>"
                      data-skin="<?php echo($grid_layout[$index]['skin']); ?>"
+                     data-original-index="<?php echo esc_attr($index + 1); ?>"
 
                      data-desktop-gs-x="<?php echo esc_attr($current_x); ?>"
                      data-desktop-gs-y="<?php echo esc_attr($current_y); ?>"

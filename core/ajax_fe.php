@@ -37,6 +37,9 @@ function increment_post_remix_counter_callback(){
 add_action('wp_ajax_nopriv_grid_plus_load_gallery','grid_plus_load_gallery_callback');
 add_action('wp_ajax_grid_plus_load_gallery', 'grid_plus_load_gallery_callback');
 
+add_action('wp_ajax_nopriv_grid_plus_get_post_tags', 'grid_plus_get_post_tags_callback');
+add_action('wp_ajax_grid_plus_get_post_tags', 'grid_plus_get_post_tags_callback');
+
 function grid_plus_load_gallery_callback(){
     $galleries = array();
 
@@ -99,5 +102,42 @@ function grid_plus_load_gallery_callback(){
 
     echo json_encode($galleries);
 
+    wp_die();
+}
+
+function grid_plus_get_post_tags_callback() {
+    if (!isset($_REQUEST['post_id']) || $_REQUEST['post_id'] == '') {
+        echo json_encode(array('error' => 'No post ID provided'));
+        wp_die();
+    }
+    
+    $post_id = intval($_REQUEST['post_id']);
+    
+    // Get ALL tags directly from database, bypassing any cache
+    $tags = wp_get_post_tags($post_id);
+    
+    $tag_data = array();
+    if ($tags && !is_wp_error($tags)) {
+        foreach ($tags as $tag) {
+            $tag_data[] = array(
+                'id' => $tag->term_id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+                'link' => get_tag_link($tag->term_id)
+            );
+        }
+    }
+    
+    // Clear any potential cache
+    wp_cache_delete($post_id, 'post_tag_relationships');
+    
+    echo json_encode(array(
+        'success' => true,
+        'post_id' => $post_id,
+        'tags' => $tag_data,
+        'tag_count' => count($tag_data),
+        'timestamp' => current_time('mysql')
+    ));
+    
     wp_die();
 }

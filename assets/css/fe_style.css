@@ -968,3 +968,342 @@ div.grid-stack-item[data-layout="thumbnail"] > .grid-stack-item-content {
 .hidden {
     display: none !important;
 }
+
+/* Module Tags Styling */
+.module-tags {
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.module-tag {
+    display: inline-block;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Tag color classes - Dark Blue, Light Blue, Green */
+.module-tag:nth-child(3n+1) {
+    background-color: #29367d; /* Dark Blue */
+}
+
+.module-tag:nth-child(3n+2) {
+    background-color: #5cb5e6; /* Light Blue */
+}
+
+.module-tag:nth-child(3n+3) {
+    background-color: #7cd084; /* Green */
+}
+
+/* Hover effects with darker shades */
+.module-tag:nth-child(3n+1):hover {
+    background-color: #1e2657; /* Darker blue on hover */
+    transform: translateY(-1px);
+}
+
+.module-tag:nth-child(3n+2):hover {
+    background-color: #4a9bc8; /* Darker light blue on hover */
+    transform: translateY(-1px);
+}
+
+.module-tag:nth-child(3n+3):hover {
+    background-color: #6ab66e; /* Darker green on hover */
+    transform: translateY(-1px);
+}
+
+/* Search Box Styling */
+.grid-search-box {
+    margin-bottom: 20px;
+    position: relative;
+    max-width: 500px;
+}
+
+.grid-search-input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.grid-search-input:focus {
+    border-color: #999;
+}
+
+.grid-search-input::placeholder {
+    color: #999;
+    opacity: 1;
+    font-size: 13px;
+}
+
+.grid-search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+}
+
+/* Search Results Count */
+.grid-search-results {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #666;
+    display: none;
+}
+
+/* Search functionality - use CSS Grid for search results */
+.search-active .grid-stack {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-gap: 20px;
+    height: auto !important;
+}
+
+.search-active .grid-stack-item {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+}
+
+.search-active .grid-stack-item.search-hidden {
+    display: none !important;
+}
+
+.search-active .grid-stack-item.search-visible {
+    display: block !important;
+}
+
+/* Maintain aspect ratio for grid items during search */
+.search-active .grid-stack-item-content {
+    position: relative !important;
+    padding-bottom: 100%; /* 1:1 aspect ratio */
+}
+
+.search-active .grid-stack-item-content > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Hide pagination controls during search */
+.search-active ~ .grid-paging-wrap,
+.search-active ~ .grid-load-more-wrap,
+.search-active ~ .grid-infinite-scroll-wrap {
+    display: none !important;
+}
+
+
+/* Search Highlight */
+.search-highlight {
+    background-color: #ffeb3b;
+    color: #000;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 500;
+}
+
+/* Share button for lightbox */
+.lg-toolbar .lg-share:after {
+    content: "\e905";
+    font-family: 'lg';
+    font-size: 20px;
+}
+
+/* Alternative share icon using Font Awesome if available */
+.lg-toolbar .lg-share.fa:after {
+    content: "\f1e0";
+    font-family: FontAwesome;
+    font-size: 18px;
+}
+
+/* Share button hover effect */
+.lg-toolbar .lg-share:hover {
+    color: #FFF;
+}
+
+/* Share tooltip styles */
+.lg-share-tooltip {
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* Copy link button styles */
+.lg-toolbar .lg-copy-link {
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.lg-toolbar .lg-copy-link:hover {
+    color: #FFF;
+}
+
+.lg-toolbar .lg-copy-link.copy-success {
+    color: #4CAF50;
+}
+
+.lg-toolbar .lg-copy-link.copy-error {
+    color: #f44336;
+}
+
+/* Semantic UI icon adjustments for copy button */
+.gridplus-copy-btn i.icon {
+    font-size: 18px;
+    line-height: 1;
+    vertical-align: middle;
+    margin: 0;
+    display: inline-block;
+}
+
+/* Ensure Semantic UI copy icon shows properly */
+.gridplus-copy-btn i.copy.icon:before {
+    font-family: 'Icons' !important;
+}
+
+/* Close icon for custom toolbar */
+.lg-toolbar .lg-close:after {
+    content: "\e070";
+    font-family: 'lg';
+}
+
+/* Style the manually created close button */
+.lg-toolbar .lg-icon-close {
+    float: right;
+    font-size: 24px;
+    height: 47px;
+    line-height: 27px;
+    padding: 10px 0;
+    text-align: center;
+    width: 50px;
+    color: #999;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.lg-toolbar .lg-icon-close:hover {
+    color: #FFF;
+}
+
+/* Ensure toolbar is positioned correctly within lightbox */
+.lg-outer > .lg-toolbar {
+    /* Ensure it's positioned relative to lg-outer */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1082;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+/* Make sure lg-outer is positioned properly */
+.lg-outer {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1050 !important;
+}
+
+/* Ensure copy button stays within lightbox */
+.lg-outer .lg-toolbar .lg-copy-link {
+    /* Use same styling as other toolbar icons */
+    color: #999;
+    cursor: pointer;
+    float: right;
+    font-size: 24px;
+    height: 47px;
+    line-height: 27px;
+    padding: 10px 0;
+    text-align: center;
+    width: 50px;
+    text-decoration: none !important;
+    outline: medium none;
+}
+
+/* Font Awesome fallback styling */
+.lg-toolbar .lg-copy-link span {
+    font-size: 20px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* Ensure all toolbar buttons stay inside the lightbox */
+.lg-outer .lg-toolbar .lg-icon {
+    position: relative !important;
+    z-index: 1083 !important;
+}
+
+/* Hide any toolbar that might be created outside the lightbox */
+body > .lg-toolbar {
+    display: none !important;
+}
+
+/* Custom copy button container styles */
+.gridplus-copy-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+/* Style for copy button inside white module popup */
+.module-content .gridplus-copy-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.gridplus-copy-btn {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #666;
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    line-height: 1;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.gridplus-copy-btn:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #333;
+    text-decoration: none;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.gridplus-copy-btn.copy-success {
+    color: #4CAF50;
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.gridplus-copy-btn.copy-error {
+    color: #f44336;
+    border-color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Ensure module-content has relative positioning for absolute children */
+.module-content {
+    position: relative !important;
+}
